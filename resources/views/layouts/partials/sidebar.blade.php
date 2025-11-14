@@ -1,22 +1,24 @@
 <!-- Left Sidebar Start -->
 <div class="app-sidebar-menu">
     <!-- Logo Box -->
-    <div class="logo-box p-3">
-        <a href="{{ route('home') }}" class="logo logo-light">
+    <div class="logo-box">
+        <a href="{{ route('home') }}" class="logo logo-light d-flex align-items-center">
             <span class="logo-sm">
-                <img src="/images/logo-sm.png" alt="Small Logo" height="22">
+                <img src="/images/logo.png" alt="Small Logo">
             </span>
             <span class="logo-lg">
-                <img src="/images/logo-light.png" alt="Large Logo" height="24">
+                <img src="/images/logo.png" alt="Large Logo">
             </span>
+            <span class="logo-text ms-2">Royal Butcher</span>
         </a>
-        <a href="{{ route('home') }}" class="logo logo-dark">
+        <a href="{{ route('home') }}" class="logo logo-dark d-flex align-items-center">
             <span class="logo-sm">
-                <img src="/images/logo-sm.png" alt="Small Logo" height="22">
+                <img src="/images/logo.png" alt="Small Logo">
             </span>
             <span class="logo-lg">
-                <img src="/images/logo-dark.png" alt="Large Logo" height="24">
+                <img src="/images/logo.png" alt="Large Logo">
             </span>
+            <span class="logo-text ms-2">Royal Butcher</span>
         </a>
     </div>
 
@@ -27,6 +29,92 @@
 
             <!-- Custom styling for sidebar buttons -->
             <style>
+                /* Logo Box Styling */
+                .logo-box {
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    padding: 1rem !important;
+                }
+
+                .logo-box .logo {
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    text-decoration: none;
+                    width: 100%;
+                }
+
+                .logo-box .logo img {
+                    max-width: 100%;
+                    height: auto;
+                    object-fit: contain;
+                    flex-shrink: 0;
+                }
+
+                .logo-box .logo-lg img {
+                    max-height: 60px;
+                    width: auto;
+                }
+
+                .logo-box .logo-sm img {
+                    max-height: 40px;
+                    width: auto;
+                }
+
+                .logo-box .logo-text {
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    color: #212529;
+                    white-space: nowrap;
+                    margin-left: 0.75rem;
+                }
+
+                body[data-menu-color="dark"] .logo-box .logo-text {
+                    color: #fff;
+                }
+
+                /* Hide logo-light by default, show logo-dark */
+                .logo-box .logo-light {
+                    display: none !important;
+                }
+
+                .logo-box .logo-dark {
+                    display: flex !important;
+                }
+
+                /* Show logo-light only in dark mode */
+                body[data-menu-color="dark"] .logo-box .logo-light {
+                    display: flex !important;
+                }
+
+                body[data-menu-color="dark"] .logo-box .logo-dark {
+                    display: none !important;
+                }
+
+                /* Ensure only one logo span shows at a time */
+                .logo-box .logo-lg {
+                    display: block;
+                }
+
+                .logo-box .logo-sm {
+                    display: none;
+                }
+
+                @media (max-width: 991.98px) {
+                    .logo-box .logo-lg {
+                        display: none !important;
+                    }
+
+                    .logo-box .logo-sm {
+                        display: block !important;
+                    }
+
+                    .logo-box .logo-text {
+                        font-size: 1rem;
+                    }
+                }
+
                 /* Main sidebar pill buttons */
                 #side-menu.nav-pills .nav-link {
                     padding-top: 0.8rem;
@@ -35,6 +123,7 @@
                     font-weight: 500;
                     color: #495057;
                     transition: all 0.2s ease-in-out;
+                    position: relative;
                 }
 
                 /* Hover effect for non-active buttons */
@@ -72,10 +161,23 @@
 
                 /* Arrow animation */
                 .menu-arrow {
-                    transition: transform 0.2s ease;
+                    transition: transform 0.15s ease;
+                    position: absolute;
+                    right: 20px;
+                    display: inline-block;
+                    font-family: 'Material Design Icons';
+                    text-rendering: auto;
+                    line-height: 1.5rem;
+                    font-size: 1.1rem;
+                    transform: translate(0, 0);
                 }
 
-                a[aria-expanded="true"] .menu-arrow {
+                .menu-arrow:before {
+                    content: "\F0142";
+                }
+
+                a[aria-expanded="true"] .menu-arrow,
+                li > a[aria-expanded="true"] > span.menu-arrow {
                     transform: rotate(90deg);
                 }
             </style>
@@ -136,23 +238,24 @@
                         $contentRoutes = ['splash-screens.*', 'select-city-pages.*', 'phone-number-pages.*', 'otp-pages.*',
                          'home-page-contents.*', 'new-order-pages.*', 'order-customization-pages.*', 'cart-page-contents.*',
                             'checkout-page-contents.*', 'add-address-pages.*', 'access-location-pages.*', 'profile-pages.*',
-                            'card-details-pages.*', 'successful-pages.*'];
+                            'card-details-pages.*', 'successful-pages.*', 'drawer-pages.*', 'wallet-pages.*', 'change-information-pages.*',
+                            'personal-information-pages.*'];
                     @endphp
-                    <a class="nav-link d-flex align-items-center {{ request()->routeIs($contentRoutes) ? 'active' : '' }}" 
+                    <a class="nav-link d-flex justify-content-between align-items-center {{ request()->routeIs($contentRoutes) ? 'active' : '' }}" 
                        href="#sidebarContent" 
                        data-bs-toggle="collapse" 
                        role="button" 
                        aria-expanded="{{ request()->routeIs($contentRoutes) ? 'true' : 'false' }}">
-                        
-                        <i data-feather="edit" class="me-2" style="width: 18px;"></i>
-                        <span> Dynamic Content </span>
-
-                        <span class="menu-arrow ms-auto"><i data-feather="chevron-right" style="width: 16px;"></i></span>
+                        <div class="d-flex align-items-center">
+                            <i data-feather="edit" class="me-2" style="width: 18px;"></i>
+                            <span> Dynamic Content </span>
+                        </div>
+                        <span class="menu-arrow"></span>
                     </a>
 
                     <!-- Collapsible Sub-menu -->
                     <div class="collapse {{ request()->routeIs($contentRoutes) ? 'show' : '' }}" id="sidebarContent">
-                        <ul class="nav flex-column ps-4">
+                        <ul class="nav flex-column ps-4 nav-second-level">
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('splash-screens.*') ? 'active' : '' }}" 
                                    href="{{ route('splash-screens.index') }}">
@@ -243,6 +346,34 @@
                                 <a class="nav-link {{ request()->routeIs('successful-pages.*') ? 'active' : '' }}" 
                                    href="{{ route('successful-pages.index') }}">
                                     <span>Successful Page</span>
+                                </a>
+                            </li>
+                             <!-- --- NEW: Drawer Page Link --- -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('drawer-pages.*') ? 'active' : '' }}" 
+                                   href="{{ route('drawer-pages.index') }}">
+                                    <span>Drawer Page</span>
+                                </a>
+                            </li>
+                             <!-- --- NEW: Wallet Page Link --- -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('wallet-pages.*') ? 'active' : '' }}" 
+                                   href="{{ route('wallet-pages.index') }}">
+                                    <span>Wallet Page</span>
+                                </a>
+                            </li>
+                             <!-- --- NEW: Change Information Page Link --- -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('change-information-pages.*') ? 'active' : '' }}" 
+                                   href="{{ route('change-information-pages.index') }}">
+                                    <span>Change Information Page</span>
+                                </a>
+                            </li>
+                             <!-- --- NEW: Personal Information Page Link --- -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('personal-information-pages.*') ? 'active' : '' }}" 
+                                   href="{{ route('personal-information-pages.index') }}">
+                                    <span>Personal Information Page</span>
                                 </a>
                             </li>
                             

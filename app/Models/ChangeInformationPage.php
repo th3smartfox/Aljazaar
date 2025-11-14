@@ -5,23 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model
+class ChangeInformationPage extends Model
 {
     use HasFactory;
 
+    protected $table = 'change_information_pages';
+
     protected $fillable = [
-        'name',
-        'description',
-        'image',
+        'title',
+        'label_account',
+        'label_personal_information',
+        'label_payment_method',
+        'label_card_information',
         'status',
     ];
 
     protected $casts = [
         'status' => 'boolean',
     ];
-
-    public function items()
-    {
-        return $this->hasMany(Item::class);
-    }
 }

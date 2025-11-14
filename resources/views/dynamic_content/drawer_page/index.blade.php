@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['title' => 'Home Page Content'])
+@extends('layouts.vertical', ['title' => 'Drawer Page Content'])
 
 @section('css')
     @vite(['node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css', 'node_modules/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css', 'node_modules/datatables.net-keytable-bs5/css/keyTable.bootstrap5.min.css', 'node_modules/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css', 'node_modules/datatables.net-select-bs5/css/select.bootstrap5.min.css'])
@@ -14,7 +14,7 @@
             <ol class="breadcrumb m-0 py-0">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dynamic Content</a></li>
-                <li class="breadcrumb-item active">Home Page</li>
+                <li class="breadcrumb-item active">Drawer Page</li>
             </ol>
         </div>
     </div>
@@ -25,8 +25,8 @@
             <div class="card shadow-sm border-0">
 
                 <div class="card-header d-flex justify-content-between align-items-center bg-white py-3">
-                    <h5 class="card-title mb-0 fw-semibold">Home Page Content List</h5>
-                    <a href="{{ route('home-page-contents.create') }}" class="btn btn-primary" id="createButton">
+                    <h5 class="card-title mb-0 fw-semibold">Drawer Page Content List</h5>
+                    <a href="{{ route('drawer-pages.create') }}" class="btn btn-primary" id="createButton">
                         <i data-feather="plus" class="me-1" style="width: 16px;"></i>
                         Create New
                     </a>
@@ -44,35 +44,41 @@
                     <table id="datatable" class="table table-bordered dt-responsive table-hover table-responsive nowrap align-middle">
                         <thead>
                             <tr>
-                                <th>Tabs (New/Newest/Fav)</th>
-                                <th>Section Titles (Hot/Top/You)</th>
-                                <th>Carousels</th>
-                                <th>Tabs</th>
-                                <th>See All Text</th>
+                                <th>App Name (Title)</th>
+                                <th>My Account Button</th>
+                                <th>Wallet Button</th>
+                                <th>Messages Button</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($homePages as $page)
+                            @foreach ($drawerPages as $page)
+                                @php
+                                    $myAccountData = is_array($page->button_my_account) ? $page->button_my_account : json_decode($page->button_my_account, true);
+                                    $walletData = is_array($page->button_wallet) ? $page->button_wallet : json_decode($page->button_wallet, true);
+                                    $messagesData = is_array($page->button_messages) ? $page->button_messages : json_decode($page->button_messages, true);
+                                @endphp
                                 <tr>
-                                    <td>{{ $page->tab_new_order }} / {{ $page->tab_newest }} / {{ $page->tab_most_favorite }}</td>
-                                    <td>{{ $page->title_hot_discounts }} / {{ $page->title_top_picks }} / {{ $page->title_for_you }}</td>
+                                    <td>{{ $page->title }}</td>
                                     <td>
-                                        @if($page->carousels && count($page->carousels) > 0)
-                                            <span class="badge bg-info-subtle text-info">{{ count($page->carousels) }} Carousel(s)</span>
-                                        @else
-                                            <span class="text-muted">None</span>
+                                        {{ $myAccountData['title'] ?? $page->button_my_account }}
+                                        @if (isset($myAccountData['is_subtitle']) && $myAccountData['is_subtitle'])
+                                            <span class="badge bg-info-subtle text-info ms-1">Subtitle</span>
                                         @endif
                                     </td>
                                     <td>
-                                        @if($page->tabs && count($page->tabs) > 0)
-                                            <span class="badge bg-info-subtle text-info">{{ count($page->tabs) }} Tab(s)</span>
-                                        @else
-                                            <span class="text-muted">None</span>
+                                        {{ $walletData['title'] ?? $page->button_wallet }}
+                                        @if (isset($walletData['is_subtitle']) && $walletData['is_subtitle'])
+                                            <span class="badge bg-info-subtle text-info ms-1">Subtitle</span>
                                         @endif
                                     </td>
-                                    <td>{{ $page->text_see_all }}</td>
+                                    <td>
+                                        {{ $messagesData['title'] ?? $page->button_messages }}
+                                        @if (isset($messagesData['is_subtitle']) && $messagesData['is_subtitle'])
+                                            <span class="badge bg-info-subtle text-info ms-1">Subtitle</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         @if ($page->status)
                                             <span class="badge bg-success-subtle text-success">Active</span>
@@ -82,9 +88,9 @@
                                     </td>
                                     <td>
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('home-page-contents.edit', $page->id) }}"
+                                            <a href="{{ route('drawer-pages.edit', $page->id) }}"
                                                 class="btn btn-sm btn-primary">Edit</a>
-                                            <form action="{{ route('home-page-contents.destroy', $page->id) }}" method="POST"
+                                            <form action="{{ route('drawer-pages.destroy', $page->id) }}" method="POST"
                                                 class="delete-form" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')

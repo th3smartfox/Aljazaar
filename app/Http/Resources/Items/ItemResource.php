@@ -7,6 +7,14 @@ use Illuminate\Support\Facades\Storage;
 
 class ItemResource extends JsonResource
 {
+    protected $pageContent;
+
+    public function __construct($resource, $pageContent = null)
+    {
+        parent::__construct($resource);
+        $this->pageContent = $pageContent;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -15,7 +23,7 @@ class ItemResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $data = [
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
@@ -29,5 +37,12 @@ class ItemResource extends JsonResource
             'created_at' => $this->created_at->toDateTimeString(),
             'add_ons' => $this->customization_options ?? [], 
         ];
+
+        // Add page content if provided
+        if ($this->pageContent) {
+            $data['page_content'] = $this->pageContent;
+        }
+
+        return $data;
     }
 }

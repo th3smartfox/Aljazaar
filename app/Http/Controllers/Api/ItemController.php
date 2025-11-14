@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Items\ItemResource;
 use App\Http\Resources\Items\ItemSummaryResource;
 use App\Models\Item;
+use App\Models\OrderCustomizationPage;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -43,6 +44,23 @@ class ItemController extends Controller
     }
 
     /**
+     * API 4: Fetch most favorite items (Mostly bought items)
+     * Currently returns items, will be upgraded in future based on order data
+     */
+    public function mostFavorite()
+    {
+        // Eager load category, show active items
+        // Future: Will filter based on order count
+        $items = Item::with('category:id,name')
+            ->where('status', true) // Sirf active items
+            ->latest() // Currently showing latest items
+            ->limit(10) // Top 10 results
+            ->get();
+
+        return ItemSummaryResource::collection($items);
+    }
+
+    /**
      * API 3: Get details for a single item
      */
     public function show(Item $item)
@@ -53,6 +71,27 @@ class ItemController extends Controller
         
         $item->load('category:id,name');
 
-        return new ItemResource($item);
+        // Fetch order customization page content
+        $pageContent = OrderCustomizationPage::where('status', true)->latest()->first();
+        
+        $pageContentData = [
+            'title' => 'Order Customization',
+            'text_add_ons' => 'Add-Ons',
+            'text_portion' => 'Portion',
+            'button_add_to_cart' => 'Add to cart',
+            'text_total' => 'Total',
+        ];
+
+        if ($pageContent) {
+            $pageContentData = [
+                'title' => $pageContent->title ?? 'Order Customization',
+                'text_add_ons' => $pageContent->text_add_ons ?? 'Add-Ons',
+                'text_portion' => $pageContent->text_portion ?? 'Portion',
+                'button_add_to_cart' => $pageContent->button_add_to_cart ?? 'Add to cart',
+                'text_total' => $pageContent->text_total ?? 'Total',
+            ];
+        }
+
+        return new ItemResource($item, $pageContentData);
     }
 }

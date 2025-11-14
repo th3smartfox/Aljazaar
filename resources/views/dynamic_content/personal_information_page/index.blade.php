@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['title' => 'Home Page Content'])
+@extends('layouts.vertical', ['title' => 'Personal Information Page'])
 
 @section('css')
     @vite(['node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css', 'node_modules/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css', 'node_modules/datatables.net-keytable-bs5/css/keyTable.bootstrap5.min.css', 'node_modules/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css', 'node_modules/datatables.net-select-bs5/css/select.bootstrap5.min.css'])
@@ -14,7 +14,7 @@
             <ol class="breadcrumb m-0 py-0">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dynamic Content</a></li>
-                <li class="breadcrumb-item active">Home Page</li>
+                <li class="breadcrumb-item active">Personal Information Page</li>
             </ol>
         </div>
     </div>
@@ -25,8 +25,8 @@
             <div class="card shadow-sm border-0">
 
                 <div class="card-header d-flex justify-content-between align-items-center bg-white py-3">
-                    <h5 class="card-title mb-0 fw-semibold">Home Page Content List</h5>
-                    <a href="{{ route('home-page-contents.create') }}" class="btn btn-primary" id="createButton">
+                    <h5 class="card-title mb-0 fw-semibold">Personal Information Page List</h5>
+                    <a href="{{ route('personal-information-pages.create') }}" class="btn btn-primary" id="createButton">
                         <i data-feather="plus" class="me-1" style="width: 16px;"></i>
                         Create New
                     </a>
@@ -44,35 +44,21 @@
                     <table id="datatable" class="table table-bordered dt-responsive table-hover table-responsive nowrap align-middle">
                         <thead>
                             <tr>
-                                <th>Tabs (New/Newest/Fav)</th>
-                                <th>Section Titles (Hot/Top/You)</th>
-                                <th>Carousels</th>
-                                <th>Tabs</th>
-                                <th>See All Text</th>
+                                <th>Bar Title</th>
+                                <th>Name Label</th>
+                                <th>Email Label</th>
+                                <th>Phone Label</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($homePages as $page)
+                            @foreach ($personalPages as $page)
                                 <tr>
-                                    <td>{{ $page->tab_new_order }} / {{ $page->tab_newest }} / {{ $page->tab_most_favorite }}</td>
-                                    <td>{{ $page->title_hot_discounts }} / {{ $page->title_top_picks }} / {{ $page->title_for_you }}</td>
-                                    <td>
-                                        @if($page->carousels && count($page->carousels) > 0)
-                                            <span class="badge bg-info-subtle text-info">{{ count($page->carousels) }} Carousel(s)</span>
-                                        @else
-                                            <span class="text-muted">None</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($page->tabs && count($page->tabs) > 0)
-                                            <span class="badge bg-info-subtle text-info">{{ count($page->tabs) }} Tab(s)</span>
-                                        @else
-                                            <span class="text-muted">None</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $page->text_see_all }}</td>
+                                    <td>{{ $page->title }}</td>
+                                    <td>{{ $page->label_name }}</td>
+                                    <td>{{ $page->label_email }}</td>
+                                    <td>{{ $page->label_phone }}</td>
                                     <td>
                                         @if ($page->status)
                                             <span class="badge bg-success-subtle text-success">Active</span>
@@ -82,9 +68,9 @@
                                     </td>
                                     <td>
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('home-page-contents.edit', $page->id) }}"
+                                            <a href="{{ route('personal-information-pages.edit', $page->id) }}"
                                                 class="btn btn-sm btn-primary">Edit</a>
-                                            <form action="{{ route('home-page-contents.destroy', $page->id) }}" method="POST"
+                                            <form action="{{ route('personal-information-pages.destroy', $page->id) }}" method="POST"
                                                 class="delete-form" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')

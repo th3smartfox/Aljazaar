@@ -6,11 +6,11 @@
         <div class="col-md-7 mx-auto">
             <div class="mb-0 border-0 p-md-5 p-lg-0 p-4">
                 <div class="mb-4 p-0">
-                    <a href="{{ route('home') }}" class="auth-logo">
-                        <img src="/images/logo-dark.png" alt="logo-dark" class="mx-auto" height="28" />
+                    <a href="{{ route('home') }}" class="auth-logo d-flex align-items-center justify-content-center">
+                        <img src="/images/logo.png" alt="logo-dark" height="80" class="me-3" />
+                        <span class="logo-text" style="font-size: 1.75rem; font-weight: 600; color: #212529;">Royal Butcher</span>
                     </a>
                 </div>
-
                 <div class="pt-0">
                     <form method="POST" action="{{ route('login') }}" class="my-4">
                         @csrf

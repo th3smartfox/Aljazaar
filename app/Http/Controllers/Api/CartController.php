@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\CartPageContent;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,9 +52,37 @@ class CartController extends Controller
     {
         $cartData = $this->getCartSummary(Auth::id());
 
+        // Fetch cart page content
+        $pageContent = CartPageContent::where('status', true)->latest()->first();
+        
+        $pageContentData = [
+            'title' => 'Order Details',
+            'text_rewards_progress' => 'Your Rewards Progress',
+            'text_rewards_status' => "You're {amount} from your coupon code",
+            'total_spending' => '0.00',
+            'placeholder_coupon' => 'Enter Coupon Code',
+            'button_apply' => 'Apply',
+            'text_total' => 'Total',
+            'button_checkout' => 'Checkout',
+        ];
+
+        if ($pageContent) {
+            $pageContentData = [
+                'title' => $pageContent->title ?? 'Order Details',
+                'text_rewards_progress' => $pageContent->text_rewards_progress ?? 'Your Rewards Progress',
+                'text_rewards_status' => $pageContent->text_rewards_status ?? "You're {amount} away from your coupon code",
+                'total_spending' => $pageContent->total_spending ?? '0.00',
+                'placeholder_coupon' => $pageContent->placeholder_coupon ?? 'Enter Coupon Code',
+                'button_apply' => $pageContent->button_apply ?? 'Apply',
+                'text_total' => $pageContent->text_total ?? 'Total',
+                'button_checkout' => $pageContent->button_checkout ?? 'Checkout',
+            ];
+        }
+
         return response()->json([
             'items' => CartResource::collection($cartData['items']),
-            'summary' => $cartData['summary']
+            'summary' => $cartData['summary'],
+            'page_content' => $pageContentData
         ]);
     }
 
@@ -93,10 +122,8 @@ class CartController extends Controller
         $cartData = $this->getCartSummary($userId);
         return response()->json([
             'message' => 'Item added to cart successfully',
-            'cart' => [
                 'items' => CartResource::collection($cartData['items']),
                 'summary' => $cartData['summary']
-            ]
         ], 200);
     }
 
@@ -123,10 +150,8 @@ class CartController extends Controller
             $cartData = $this->getCartSummary($userId);
             return response()->json([
                 'message' => 'Cart updated successfully',
-                'cart' => [
                     'items' => CartResource::collection($cartData['items']),
                     'summary' => $cartData['summary']
-                ]
             ], 200);
         }
 
@@ -151,10 +176,8 @@ class CartController extends Controller
         $cartData = $this->getCartSummary($userId);
         return response()->json([
             'message' => 'Item removed from cart successfully',
-            'cart' => [
                 'items' => CartResource::collection($cartData['items']),
                 'summary' => $cartData['summary']
-            ]
         ], 200);
     }
 }

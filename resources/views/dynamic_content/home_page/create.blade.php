@@ -24,7 +24,7 @@
                 </div><!-- end card header -->
 
                 <div class="card-body">
-                    <form class="row g-3" action="{{ route('home-page-contents.store') }}" method="POST">
+                    <form class="row g-3" action="{{ route('home-page-contents.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <h6 class="text-primary">Tab Texts</h6>
@@ -69,14 +69,6 @@
                         </div>
                         
                         <hr class="my-3">
-                        <h6 class="text-primary">Reusable Texts</h6>
-
-                        <div class="col-md-6">
-                            <label for="text_see_all" class="form-label">"See all" Text</label>
-                            <input type="text" name="text_see_all" class="form-control @error('text_see_all') is-invalid @enderror"
-                                id="text_see_all" value="{{ old('text_see_all', 'See all') }}" required>
-                        </div>
-                        
                         <div class="col-md-6">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select @error('status') is-invalid @enderror" name="status"
@@ -84,6 +76,87 @@
                                 <option value="1" {{ old('status', '1') == '1' ? 'selected' : '' }}>Active</option>
                                 <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Inactive</option>
                             </select>
+                        </div>
+
+                        <hr class="my-3">
+                        <div class="col-12 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="text-primary mb-0">Carousels</h6>
+                                <button type="button" class="btn btn-sm btn-primary" id="addCarousel">
+                                    <i data-feather="plus" class="me-1" style="width: 14px;"></i> Add Carousel
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div id="carouselsContainer" class="row g-3">
+                                <!-- Carousels will be added here dynamically -->
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+                        <div class="col-12 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="text-primary mb-0">Tabs (Max 3)</h6>
+                                <button type="button" class="btn btn-sm btn-primary" id="addTab">
+                                    <i data-feather="plus" class="me-1" style="width: 14px;"></i> Add Tab
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div id="tabsContainer" class="row g-3">
+                                <!-- Tabs will be added here dynamically -->
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+                        <h6 class="text-primary">Section Headings</h6>
+
+                        <div class="col-md-4">
+                            <label for="hot_discount_main_heading" class="form-label">Hot Discounts - Main Heading</label>
+                            <input type="text" name="hot_discount_main_heading" class="form-control"
+                                id="hot_discount_main_heading" value="{{ old('hot_discount_main_heading', 'Hot discounts') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="hot_discount_sub_heading" class="form-label">Hot Discounts - Sub Heading</label>
+                            <input type="text" name="hot_discount_sub_heading" class="form-control"
+                                id="hot_discount_sub_heading" value="{{ old('hot_discount_sub_heading') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="hot_discount_side_text" class="form-label">Hot Discounts - Side Text</label>
+                            <input type="text" name="hot_discount_side_text" class="form-control"
+                                id="hot_discount_side_text" value="{{ old('hot_discount_side_text', 'See All') }}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="top_picks_main_heading" class="form-label">Top Picks - Main Heading</label>
+                            <input type="text" name="top_picks_main_heading" class="form-control"
+                                id="top_picks_main_heading" value="{{ old('top_picks_main_heading', 'Top picks') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="top_picks_sub_heading" class="form-label">Top Picks - Sub Heading</label>
+                            <input type="text" name="top_picks_sub_heading" class="form-control"
+                                id="top_picks_sub_heading" value="{{ old('top_picks_sub_heading') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="top_picks_side_text" class="form-label">Top Picks - Side Text</label>
+                            <input type="text" name="top_picks_side_text" class="form-control"
+                                id="top_picks_side_text" value="{{ old('top_picks_side_text', 'See All') }}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="order_again_main_heading" class="form-label">Order Again - Main Heading</label>
+                            <input type="text" name="order_again_main_heading" class="form-control"
+                                id="order_again_main_heading" value="{{ old('order_again_main_heading', 'Order Again') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="order_again_sub_heading" class="form-label">Order Again - Sub Heading</label>
+                            <input type="text" name="order_again_sub_heading" class="form-control"
+                                id="order_again_sub_heading" value="{{ old('order_again_sub_heading') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="order_again_side_text" class="form-label">Order Again - Side Text</label>
+                            <input type="text" name="order_again_side_text" class="form-control"
+                                id="order_again_side_text" value="{{ old('order_again_side_text', 'See All') }}">
                         </div>
 
                         <!-- Submit Button -->
@@ -96,4 +169,179 @@
             </div> <!-- end card-->
         </div> <!-- end col -->
     </div>
+@endsection
+
+@section('script')
+    <style>
+        #carouselsContainer, #tabsContainer {
+            min-height: 20px;
+            display: block !important;
+            width: 100% !important;
+            clear: both !important;
+        }
+        .carousel-item, .tab-item {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: 100% !important;
+            float: none !important;
+            clear: both !important;
+            margin-bottom: 1rem !important;
+            position: relative !important;
+        }
+        .carousel-item .row, .tab-item .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    </style>
+    <script>
+        (function() {
+            let carouselCount = 0;
+            let tabCount = 0;
+
+            function initCarousels() {
+                const addCarouselBtn = document.getElementById('addCarousel');
+                if (!addCarouselBtn) {
+                    console.log('Add Carousel button not found, retrying...');
+                    setTimeout(initCarousels, 100);
+                    return;
+                }
+
+                addCarouselBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Add Carousel clicked');
+                    const container = document.getElementById('carouselsContainer');
+                    if (!container) {
+                        console.error('Carousels container not found');
+                        return;
+                    }
+                    
+                    const index = carouselCount++;
+                    
+                    const carouselHtml = '<div class="col-12 mb-3 p-3 border rounded carousel-item" data-index="' + index + '">' +
+                        '<div class="d-flex justify-content-between align-items-center mb-2">' +
+                        '<h6 class="mb-0">Carousel ' + (index + 1) + '</h6>' +
+                        '<button type="button" class="btn btn-sm btn-danger remove-carousel">' +
+                        '<i data-feather="trash-2" style="width: 14px;"></i> Remove' +
+                        '</button>' +
+                        '</div>' +
+                        '<div class="row g-3">' +
+                        '<div class="col-md-6">' +
+                        '<label class="form-label">Heading</label>' +
+                        '<input type="text" name="carousel_heading[]" class="form-control" placeholder="Enter heading">' +
+                        '</div>' +
+                        '<div class="col-md-6">' +
+                        '<label class="form-label">Button Text</label>' +
+                        '<input type="text" name="carousel_button_text[]" class="form-control" placeholder="Enter button text">' +
+                        '</div>' +
+                        '<div class="col-md-12">' +
+                        '<label class="form-label">Body</label>' +
+                        '<textarea name="carousel_body[]" class="form-control" rows="2" placeholder="Enter body text"></textarea>' +
+                        '</div>' +
+                        '<div class="col-md-12">' +
+                        '<label class="form-label">Image</label>' +
+                        '<input type="file" name="carousel_images[' + index + ']" class="form-control" accept="image/*">' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+                    
+                    // Force scroll to see the added carousel
+                    container.insertAdjacentHTML('beforeend', carouselHtml);
+                    const addedCarousel = container.lastElementChild;
+                    if (addedCarousel) {
+                        addedCarousel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        console.log('Carousel added successfully. Container children:', container.children.length);
+                        console.log('Added carousel element:', addedCarousel);
+                        console.log('Carousel display style:', window.getComputedStyle(addedCarousel).display);
+                    }
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                });
+            }
+
+            function initTabs() {
+                const addTabBtn = document.getElementById('addTab');
+                if (!addTabBtn) {
+                    console.log('Add Tab button not found, retrying...');
+                    setTimeout(initTabs, 100);
+                    return;
+                }
+
+                addTabBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (tabCount >= 3) {
+                        alert('Maximum 3 tabs allowed');
+                        return;
+                    }
+                    
+                    const container = document.getElementById('tabsContainer');
+                    if (!container) {
+                        console.error('Tabs container not found');
+                        return;
+                    }
+                    
+                    const index = tabCount++;
+                    
+                    const tabHtml = '<div class="col-12 mb-3 p-3 border rounded tab-item" data-index="' + index + '">' +
+                        '<div class="d-flex justify-content-between align-items-center mb-2">' +
+                        '<h6 class="mb-0">Tab ' + (index + 1) + '</h6>' +
+                        '<button type="button" class="btn btn-sm btn-danger remove-tab">' +
+                        '<i data-feather="trash-2" style="width: 14px;"></i> Remove' +
+                        '</button>' +
+                        '</div>' +
+                        '<div class="row g-3">' +
+                        '<div class="col-md-6">' +
+                        '<label class="form-label">Title</label>' +
+                        '<input type="text" name="tab_title[]" class="form-control" placeholder="Enter tab title" required>' +
+                        '</div>' +
+                        '<div class="col-md-6">' +
+                        '<label class="form-label">Image</label>' +
+                        '<input type="file" name="tab_images[' + index + ']" class="form-control" accept="image/*">' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+                    
+                    container.insertAdjacentHTML('beforeend', tabHtml);
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                    
+                    if (tabCount >= 3) {
+                        document.getElementById('addTab').disabled = true;
+                    }
+                });
+            }
+
+            // Remove Carousel
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.remove-carousel')) {
+                    e.target.closest('.carousel-item').remove();
+                }
+            });
+
+            // Remove Tab
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.remove-tab')) {
+                    e.target.closest('.tab-item').remove();
+                    tabCount--;
+                    const addTabBtn = document.getElementById('addTab');
+                    if (addTabBtn) {
+                        addTabBtn.disabled = false;
+                    }
+                }
+            });
+
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    initCarousels();
+                    initTabs();
+                });
+            } else {
+                initCarousels();
+                initTabs();
+            }
+        })();
+    </script>
 @endsection
