@@ -6,7 +6,7 @@
         <div class="col-md-7 mx-auto">
             <div class="mb-0 border-0 p-md-5 p-lg-0 p-4">
                 <div class="mb-4 p-0">
-                    <a href="{{ route('home') }}" class="auth-logo d-flex align-items-center justify-content-center">
+                    <a href="{{ route('dashboard') }}" class="auth-logo d-flex align-items-center justify-content-center">
                         <img src="/images/logo.png" alt="logo-dark" height="80" class="me-3" />
                         <span class="logo-text" style="font-size: 1.75rem; font-weight: 600; color: #212529;">Royal Butcher</span>
                     </a>
@@ -22,7 +22,7 @@
 
                         <div class="form-group mb-3">
                             <label for="emailaddress" class="form-label">Email address</label>
-                            <input class="form-control" type="email" id="emailaddress" required="" placeholder="Enter your email" name="email" value="zafeer@devop360.com">
+                            <input class="form-control" type="email" id="emailaddress" required="" placeholder="Enter your email" name="email" value="ismail@devop360.com">
                         </div>
 
                         <div class="form-group mb-3">
@@ -37,9 +37,6 @@
                                     <label class="form-check-label" for="checkbox-signin">Remember me</label>
                                 </div>
                             </div>
-                            <div class="col-sm-6 text-end">
-                                <a class='text-muted fs-14' href='{{ route('recover.password') }}'>Forgot password?</a>                             
-                            </div>
                         </div>
 
                         <div class="form-group mb-0 row">
@@ -50,12 +47,6 @@
                             </div>
                         </div>
                     </form>
-
-                    <div class="saprator my-4"><span>or sign in with</span></div>
-        
-                    <div class="text-center text-muted mb-4">
-                        <p class="mb-0">Don't have an account ?<a class='text-primary ms-2 fw-medium' href='{{ route('register') }}'>Sign up</a></p>
-                    </div>
 
                     <!-- <div class="row">
                         <div class="col-12">
