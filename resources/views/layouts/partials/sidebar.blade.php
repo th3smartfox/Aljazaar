@@ -2,7 +2,7 @@
 <div class="app-sidebar-menu">
     <!-- Logo Box -->
     <div class="logo-box">
-        <a href="{{ route('home') }}" class="logo logo-light d-flex align-items-center">
+        <a href="{{ route('dashboard') }}" class="logo logo-light d-flex align-items-center">
             <span class="logo-sm">
                 <img src="/images/logo.png" alt="Small Logo">
             </span>
@@ -11,7 +11,7 @@
             </span>
             <span class="logo-text ms-2">Royal Butcher</span>
         </a>
-        <a href="{{ route('home') }}" class="logo logo-dark d-flex align-items-center">
+        <a href="{{ route('dashboard') }}" class="logo logo-dark d-flex align-items-center">
             <span class="logo-sm">
                 <img src="/images/logo.png" alt="Small Logo">
             </span>
@@ -191,8 +191,8 @@
 
                 <!-- Dashboard Link -->
                 <li class="nav-item my-1">
-                    <a class="nav-link d-flex align-items-center {{ request()->routeIs('home') ? 'active' : '' }}" 
-                       href="{{ route('home') }}">
+                    <a class="nav-link d-flex align-items-center {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
+                       href="{{ route('dashboard') }}">
                         <i data-feather="home" class="me-2" style="width: 18px;"></i>
                         <span> Dashboard </span>
                     </a>

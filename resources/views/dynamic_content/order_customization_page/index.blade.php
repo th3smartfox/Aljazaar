@@ -12,7 +12,7 @@
 
         <div class="text-end">
             <ol class="breadcrumb m-0 py-0">
-                <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                 <li class="breadcrumb-item"><a href="javascript: void(0);">Dynamic Content</a></li>
                 <li class="breadcrumb-item active">Order Customization Page</li>
             </ol>

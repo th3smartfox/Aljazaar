@@ -28,12 +28,12 @@ use App\Http\Controllers\UserController;
 
 require __DIR__ . '/auth.php';
 
-Route::group(['prefix' => '/', 'middleware' => 'auth'], function () {
-    Route::get('', [RoutingController::class, 'index'])->name('root');
+Route::group(['prefix' => '/dashboard', 'middleware' => 'auth'], function () {
+    // Route::get('', [RoutingController::class, 'index'])->name('root');
     Route::get('/profile', [RegisteredUserController::class, 'profile'])->name('profile');
     Route::post('/profile/update', [RegisteredUserController::class, 'updateProfile'])->name('profile.update');
     Route::post('/change-password', [RegisteredUserController::class, 'changePassword'])->name('user.change-password');
-    Route::get('/home', fn() => view('index'))->name('home');
+    Route::get('/', fn() => view('index'))->name('dashboard');
     // Route::get('{first}/{second}/{third}', [RoutingController::class, 'thirdLevel'])->name('third');
     // Route::get('{first}/{second}', [RoutingController::class, 'secondLevel'])->name('second');
     // Route::get('{any}', [RoutingController::class, 'root'])->name('any');
