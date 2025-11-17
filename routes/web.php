@@ -28,7 +28,7 @@ use App\Http\Controllers\UserController;
 
 require __DIR__ . '/auth.php';
 
-Route::group(['prefix' => '/dashboard', 'middleware' => 'auth'], function () {
+Route::group(['prefix' => '/dashboard', 'middleware' => ['auth', 'admin.only']], function () {
     // Route::get('', [RoutingController::class, 'index'])->name('root');
     Route::get('/profile', [RegisteredUserController::class, 'profile'])->name('profile');
     Route::post('/profile/update', [RegisteredUserController::class, 'updateProfile'])->name('profile.update');
@@ -39,7 +39,7 @@ Route::group(['prefix' => '/dashboard', 'middleware' => 'auth'], function () {
     // Route::get('{any}', [RoutingController::class, 'root'])->name('any');
 
     // User Management
-    Route::group(['middleware' => ['can:user_management']], function () {
+    Route::group(['middleware' => ['can:admin']], function () {
         Route::resource('user-management', UserController::class);
         Route::resource('role-management', RoleController::class);
     });

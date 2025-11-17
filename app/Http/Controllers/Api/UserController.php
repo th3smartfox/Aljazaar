@@ -34,6 +34,11 @@ class UserController extends Controller
             ]
         );
 
+        // Assign default role to new users (or ensure existing users have it)
+        if (!$user->hasRole('user')) {
+            $user->assignRole('user');
+        }
+
         // --- DEVELOPMENT / TESTING ---
         // Asal production app mein, yeh line SMS Gateway (jaise Twilio) ko call karegi
         // Abhi ke liye, hum OTP ko response mein wapas bhej rahe hain taake test kar sakein
@@ -60,7 +65,7 @@ class UserController extends Controller
         $user = User::where('phone_number', $request->phone_number)->first();
 
         if (!$user) {
-             return response()->json(['message' => 'User not found.'], 404);
+            return response()->json(['message' => 'User not found.'], 404);
         }
 
         if ($user->otp_code != $request->otp_code || $user->otp_expires_at->isPast()) {
@@ -113,7 +118,7 @@ class UserController extends Controller
 
     public function getUser(Request $request)
     {
-         return response()->json($request->user()->load('city'));
+        return response()->json($request->user()->load('city'));
     }
 
     public function logout(Request $request)

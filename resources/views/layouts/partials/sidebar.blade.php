@@ -383,7 +383,7 @@
                 <!-- ==== END DYNAMIC CONTENT ==== -->
 
                 <!-- User Management Dropdown (Spatie Permission Check) -->
-                @can('user_management')
+                @can('admin')
                 <li class="nav-item my-1">
                     <a class="nav-link d-flex justify-content-between align-items-center {{ request()->routeIs('user-management.*', 'role-management.*') ? 'active' : '' }}" 
                        href="#sidebarUserMgmt" 

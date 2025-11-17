@@ -31,6 +31,18 @@ class AuthenticatedSessionController extends Controller
 
         $request->authenticate();
 
+        $user = Auth::user();
+
+        if (!$user || !$user->hasRole('admin')) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors([
+                'email' => 'You are not authorized to access the admin dashboard.',
+            ]);
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended(RouteServiceProvider::HOME);

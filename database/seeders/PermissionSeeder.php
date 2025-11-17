@@ -16,10 +16,7 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             'admin',
-            'customer',
-            'buyer',
-            'seller',
-            'user_management'
+            'user',
         ];
         
         foreach ($permissions as $permission) {
@@ -29,9 +26,7 @@ class PermissionSeeder extends Seeder
         // Assign permissions to roles
         $rolePermissions = [
             'admin' => ['admin'],
-            'customer' => ['customer'],
-            'buyer'    => ['buyer'],
-            'seller'   => ['seller'],
+            'user' => ['user'],
         ];
         
         foreach ($rolePermissions as $roleName => $perms) {
