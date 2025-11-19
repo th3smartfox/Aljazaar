@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\DrawerPageController;
 use App\Http\Controllers\Admin\HomePageContentController;
 use App\Http\Controllers\Admin\ItemController;
 use App\Http\Controllers\Admin\NewOrderPageController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\OrderCustomizationPageController;
 use App\Http\Controllers\Admin\OtpPageController;
 use App\Http\Controllers\Admin\PersonalInformationPageController;
@@ -25,15 +26,19 @@ use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashboardController;
 
 require __DIR__ . '/auth.php';
+
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
 
 Route::group(['prefix' => '/dashboard', 'middleware' => ['auth', 'admin.only']], function () {
     // Route::get('', [RoutingController::class, 'index'])->name('root');
     Route::get('/profile', [RegisteredUserController::class, 'profile'])->name('profile');
     Route::post('/profile/update', [RegisteredUserController::class, 'updateProfile'])->name('profile.update');
     Route::post('/change-password', [RegisteredUserController::class, 'changePassword'])->name('user.change-password');
-    Route::get('/', fn() => view('index'))->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     // Route::get('{first}/{second}/{third}', [RoutingController::class, 'thirdLevel'])->name('third');
     // Route::get('{first}/{second}', [RoutingController::class, 'secondLevel'])->name('second');
     // Route::get('{any}', [RoutingController::class, 'root'])->name('any');
@@ -45,6 +50,12 @@ Route::group(['prefix' => '/dashboard', 'middleware' => ['auth', 'admin.only']],
     });
 
 
+    // --- Order Management ---
+    Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
+
     // Category Management
     Route::resource('categories', CategoryController::class);
 
@@ -54,6 +65,8 @@ Route::group(['prefix' => '/dashboard', 'middleware' => ['auth', 'admin.only']],
 
     // --- NEW: Splash Screen CRUD (Dynamic Content) ---
     Route::resource('splash-screens', SplashScreenController::class);
+    Route::get('select-city-pages/city-search', [SelectCityPageController::class, 'searchCities'])
+        ->name('select-city-pages.city-search');
     Route::resource('select-city-pages', SelectCityPageController::class);
     Route::resource('phone-number-pages', PhoneNumberPageController::class);
     Route::resource('otp-pages', OtpPageController::class);

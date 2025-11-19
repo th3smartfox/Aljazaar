@@ -229,6 +229,15 @@
                         <span> Items </span>
                     </a>
                 </li>
+                
+                <!-- --- Orders Link --- -->
+                <li class="nav-item my-1">
+                    <a class="nav-link d-flex align-items-center {{ request()->routeIs('orders.*') ? 'active' : '' }}" 
+                       href="{{ route('orders.index') }}">
+                        <i data-feather="shopping-cart" class="me-2" style="width: 18px;"></i>
+                        <span> Orders </span>
+                    </a>
+                </li>
 
                 <!-- ==== DYNAMIC CONTENT DROPDOWN (FIXED UI) ==== -->
                 <li class="nav-item my-1">

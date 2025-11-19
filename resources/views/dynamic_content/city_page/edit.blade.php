@@ -1,5 +1,9 @@
 @extends('layouts.vertical', ['title' => 'Edit City Page Content'])
 
+@section('css')
+    @include('dynamic_content.city_page.partials.form-styles')
+@endsection
+
 @section('content')
     <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
         <div class="flex-grow-1">
@@ -24,7 +28,8 @@
                 </div><!-- end card header -->
 
                 <div class="card-body">
-                    <form class="row g-3" action="{{ route('select-city-pages.update', $selectCityPage->id) }}" method="POST">
+                    <form class="row g-4" action="{{ route('select-city-pages.update', $selectCityPage->id) }}" method="POST"
+                        enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -58,6 +63,40 @@
                             @enderror
                         </div>
 
+                        <!-- City Selection -->
+                        <div class="col-12">
+                            <div class="cities-section">
+                                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                                    <div>
+                                        <label class="form-label d-block mb-1">Cities</label>
+                                        <small class="text-muted">Select cities from the master list and keep an image for
+                                            each entry.</small>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" id="addCityRow">
+                                        + Add City
+                                    </button>
+                                </div>
+
+                                @php
+                                    $maxKey = $cityRows->keys()->filter(fn($key) => is_numeric($key))->max();
+                                    $nextIndex = is_null($maxKey) ? $cityRows->count() : ($maxKey + 1);
+                                @endphp
+                                <div id="cityRows" data-search-url="{{ route('select-city-pages.city-search') }}"
+                                    data-next-index="{{ $nextIndex }}">
+                                    @foreach ($cityRows as $index => $row)
+                                        @include('dynamic_content.city_page.partials.city-row', [
+                                            'index' => $index,
+                                            'row' => $row,
+                                            'rowNumber' => $loop->iteration,
+                                        ])
+                                    @endforeach
+                                </div>
+                                @error('cities')
+                                    <div class="text-danger small">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <!-- Status Field -->
                         <div class="col-md-12">
                             <label for="status" class="form-label">Status</label>
@@ -81,4 +120,60 @@
             </div> <!-- end card-->
         </div> <!-- end col -->
     </div>
+
+    <template id="city-row-template">
+        <div class="city-card" data-index="__INDEX__">
+            <div class="city-card__header">
+                <span class="badge bg-primary-subtle text-primary fw-semibold">City #<span
+                        class="city-row-number">__ROW__</span></span>
+                <button type="button" class="btn btn-outline-danger btn-sm remove-city-row">
+                    Remove
+                </button>
+            </div>
+
+            <input type="hidden" name="cities[__INDEX__][city_id]" class="city-id-input" value="">
+            <input type="hidden" name="cities[__INDEX__][existing_image]" class="existing-image-input" value="">
+
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <label class="form-label">Selected City</label>
+                    <div class="city-selected-pill">
+                        <span class="city-selected-name">No city selected yet</span>
+                        <span class="text-muted small ms-2">(read-only)</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <label class="form-label">Search City</label>
+                    <div class="city-search-container">
+                        <div class="input-group shadow-sm">
+                            <input type="text" class="form-control city-search-input" placeholder="Start typing to search..."
+                                autocomplete="off">
+                            <button class="btn btn-outline-primary city-search-button" type="button">Search</button>
+                        </div>
+                        <div class="city-search-results d-none"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-center mt-1">
+                <div class="col-lg-6">
+                    <label class="form-label">City Image <span class="text-danger">*</span></label>
+                    <input type="file" name="cities[__INDEX__][image]" class="form-control city-image-input" accept="image/*"
+                        data-preview-target="city-preview-__INDEX__" required>
+                </div>
+
+                <div class="col-lg-6">
+                    <label class="form-label">Preview</label>
+                    <div class="city-image-preview d-none" id="city-preview-__INDEX__">
+                        <span class="text-muted small">No image selected yet</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+@endsection
+
+@section('script')
+    @include('dynamic_content.city_page.partials.form-scripts')
 @endsection

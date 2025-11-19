@@ -21,4 +21,9 @@ class SelectCityPage extends Model
     protected $casts = [
         'status' => 'boolean',
     ];
+
+    public function selectedCities()
+    {
+        return $this->hasMany(SelectCityPageCity::class);
+    }
 }

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Content\SelectCityPageResource;
 use App\Models\SelectCityPage;
 use Illuminate\Http\Request;
-use Nnjeim\World\Models\City;
 
 class CityController extends Controller
 {
@@ -48,13 +47,17 @@ class CityController extends Controller
     //     return response()->json($cities);
     // }
 
-        public function index(Request $request)
+    public function index(Request $request)
     {
-        $page = SelectCityPage::where('status', true)->latest()->first();
-        $pageContent;
+        $page = SelectCityPage::with(['selectedCities' => function ($query) {
+            $query->with('city')->orderBy('id');
+        }])
+            ->where('status', true)
+            ->latest()
+            ->first();
 
         if (!$page) {
-             $pageContent = [
+            $pageContent = [
                 'main_heading' => 'Select Your City',
                 'sub_heading' => 'Choose your city to start exploring nearby restaurants and cuisines.',
                 'button_text' => 'Next',
@@ -63,42 +66,33 @@ class CityController extends Controller
             $pageContent = (new SelectCityPageResource($page))->toArray($request);
         }
 
+        $cities = $page
+            ? $page->selectedCities
+                ->map(function ($selectedCity) {
+                    if (!$selectedCity->city) {
+                        return null;
+                    }
 
-        $middleEastCountries = [
-            'Saudi Arabia',
-            'United Arab Emirates',
-            'Qatar',
-            'Kuwait',
-            'Bahrain',
-            'Oman',
-            'Yemen',
-            'Jordan',
-            'Lebanon',
-            'Syria',
-            'Iraq',
-            'Iran',
-            'Palestine',
-            'Israel',
-            'Egypt'
-        ];
-
-        $query = City::select(['id', 'name'])
-            ->whereHas('country', function ($q) use ($middleEastCountries) {
-                $q->whereIn('name', $middleEastCountries);
-            });
+                    return [
+                        'id' => (int) $selectedCity->city_id,
+                        'name' => $selectedCity->city->name,
+                        'image' => $selectedCity->image_url,
+                    ];
+                })
+                ->filter()
+                ->values()
+            : collect();
 
         if ($request->has('search')) {
-            $searchTerm = $request->query('search');
-            $query->where('name', 'like', "{$searchTerm}%");
+            $term = strtolower($request->query('search'));
+            $cities = $cities->filter(function ($city) use ($term) {
+                return str_contains(strtolower($city['name']), $term);
+            })->values();
         }
-
-        $cities = $query->orderBy('name', 'asc')
-            ->get();
-
 
         return response()->json([
             'page_content' => $pageContent,
-            'cities' => $cities
+            'cities' => $cities,
         ]);
     }
 }
