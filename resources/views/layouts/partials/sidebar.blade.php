@@ -25,7 +25,7 @@
     <!-- Sidebar Menu -->
     <div class="h-100" data-simplebar>
         <!--- Sidemenu -->
-        <div id="sidebar-menu">
+        <div id="sidebar-menu" style="padding: 0px 2px 0px 2px;">
 
             <!-- Custom styling for sidebar buttons -->
             <style>
@@ -162,14 +162,11 @@
                 /* Arrow animation */
                 .menu-arrow {
                     transition: transform 0.15s ease;
-                    position: absolute;
-                    right: 20px;
                     display: inline-block;
                     font-family: 'Material Design Icons';
                     text-rendering: auto;
-                    line-height: 1.5rem;
                     font-size: 1.1rem;
-                    transform: translate(0, 0);
+                    margin-left: auto; /* Pushes arrow to the right if not using justify-content-between, but safe to have */
                 }
 
                 .menu-arrow:before {
