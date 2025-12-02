@@ -19,17 +19,22 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'email' => 'nullable|string|email|max:255|unique:users,email',
             'phone_number' => 'required|string|min:10|max:15|unique:users,phone_number',
             'city_id' => 'required|integer|exists:cities,id',
             'password' => 'required|string|min:8',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'status' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $user = User::create([
             'name' => $request->name,
+            'email' => $request->email,
             'phone_number' => $request->phone_number,
             'city_id' => $request->city_id,
             'password' => Hash::make($request->password),
@@ -40,6 +45,7 @@ class UserController extends Controller
         $user->assignRole('user');
 
         return response()->json([
+            'status' => 'success',
             'message' => 'Account created successfully. Please verify your phone number.',
             'user' => $user->load('city'),
         ], 201);
@@ -55,7 +61,10 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'status' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $user = User::where('phone_number', $request->phone_number)->first();
@@ -65,6 +74,7 @@ class UserController extends Controller
         $user->save();
 
         return response()->json([
+            'status' => 'success',
             'message' => 'Phone number verified successfully. You can now login.',
         ], 200);
     }
@@ -81,7 +91,10 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'status' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         // Determine login field (email or phone_number)
@@ -91,23 +104,24 @@ class UserController extends Controller
         } elseif ($request->filled('phone_number')) {
             $loginField = 'phone_number';
         } else {
-            return response()->json(['message' => 'Email or Phone Number is required.'], 422);
+            return response()->json(['status' => 'Email or Phone Number is required.'], 422);
         }
 
         $user = User::where($loginField, $request->$loginField)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials.'], 401);
+            return response()->json(['status' => 'Invalid credentials.'], 401);
         }
 
         // Check if OTP is verified
         if (is_null($user->otp_verification)) {
-            return response()->json(['message' => 'Your OTP is not verified.'], 403);
+            return response()->json(['status' => 'Your OTP is not verified.'], 403);
         }
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
+            'status' => 'success',
             'message' => 'Login successful.',
             'user' => $user->load('city'),
             'token' => $token,
