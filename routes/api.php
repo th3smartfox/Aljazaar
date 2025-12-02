@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\SplashScreenController;
 use App\Http\Controllers\Api\SuccessfulPageController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WalletPageController;
+use App\Http\Controllers\Api\SignupPageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -45,7 +46,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/cities', [CityController::class, 'index']);
 Route::get('/content/splash-screen', [SplashScreenController::class, 'getSplash']);
-Route::get('/content/select-city-page', [SelectCityPageController::class, 'getCityPageContent']); 
+Route::get('/content/select-city-page', [SelectCityPageController::class, 'getCityPageContent']);
 Route::get('/content/phone-number-page', [PhoneNumberPageController::class, 'getPageContent']);
 Route::get('/content/otp-page', [OtpPageController::class, 'getOtpPageContent']);
 Route::get('/content/profile-page', [ProfilePageController::class, 'getPageContent']);
@@ -62,6 +63,7 @@ Route::get('/content/drawer-page', [DrawerPageController::class, 'getPageContent
 Route::get('/content/wallet-page', [WalletPageController::class, 'getPageContent']);
 Route::get('/content/change-information-page', [ChangeInformationPageController::class, 'getPageContent']);
 Route::get('/content/personal-information-page', [PersonalInformationPageController::class, 'getPageContent']);
+Route::get('/content/signup-page', [SignupPageController::class, 'getPageContent']);
 
 // --- PUBLIC ROUTES (Login/Register) ---
 // User controller 
@@ -97,7 +99,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/cart/update', [CartController::class, 'updateCartItem']);
     Route::delete('/cart/remove', [CartController::class, 'removeCartItem']);
 
-    
+
     // --- NEW: Address Module Routes ---
     Route::apiResource('addresses', AddressController::class);
     Route::patch('/addresses/{address}/set-default', [AddressController::class, 'setDefault']);

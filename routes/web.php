@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\SelectCityPageController;
 use App\Http\Controllers\Admin\SplashScreenController;
 use App\Http\Controllers\Admin\SuccessfulPageController;
 use App\Http\Controllers\Admin\WalletPageController;
+use App\Http\Controllers\Admin\SignupPageController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
@@ -84,4 +85,5 @@ Route::group(['prefix' => '/dashboard', 'middleware' => ['auth', 'admin.only']],
     Route::resource('wallet-pages', WalletPageController::class);
     Route::resource('change-information-pages', ChangeInformationPageController::class);
     Route::resource('personal-information-pages', PersonalInformationPageController::class);
+    Route::resource('signup-pages', SignupPageController::class);
 });
