@@ -71,8 +71,9 @@ Route::get('/content/forgot-password-page', [ForgotPasswordPageController::class
 
 // --- PUBLIC ROUTES (Login/Register) ---
 // User controller 
-Route::post('/send-otp', [UserController::class, 'sendOtp']);
+Route::post('/signup', [UserController::class, 'signup']);
 Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
+Route::post('/login', [UserController::class, 'login']);
 
 
 // --- NEW: Public Item Routes ---
