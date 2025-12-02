@@ -69,6 +69,17 @@ class UserController extends Controller
 
         $user = User::where('phone_number', $request->phone_number)->first();
 
+        // Check if already verified
+        if (!is_null($user->otp_verification)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Phone number already verified. Please login.',
+            ], 400);
+        }
+
+        // Revoke existing tokens to prevent accumulation
+        $user->tokens()->delete();
+
         $token = $user->createToken('royal-butcher')->plainTextToken;
 
         // Update otp_verification time to now
