@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\ProfilePageController;
 use App\Http\Controllers\Admin\SelectCityPageController;
 use App\Http\Controllers\Admin\SigninPageController;
 use App\Http\Controllers\Admin\SignupPageController;
+use App\Http\Controllers\Admin\ForgotPasswordPageController;
 use App\Http\Controllers\Admin\SplashScreenController;
 use App\Http\Controllers\Admin\SuccessfulPageController;
 use App\Http\Controllers\Admin\WalletPageController;
@@ -88,4 +89,5 @@ Route::group(['prefix' => '/dashboard', 'middleware' => ['auth', 'admin.only']],
     Route::resource('personal-information-pages', PersonalInformationPageController::class);
     Route::resource('signup-pages', SignupPageController::class);
     Route::resource('signin-pages', SigninPageController::class);
+    Route::resource('forgot-password-pages', ForgotPasswordPageController::class);
 });

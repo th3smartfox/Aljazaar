@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WalletPageController;
 use App\Http\Controllers\Api\SignupPageController;
 use App\Http\Controllers\Api\SigninPageController;
+use App\Http\Controllers\Api\ForgotPasswordPageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,7 @@ Route::get('/content/change-information-page', [ChangeInformationPageController:
 Route::get('/content/personal-information-page', [PersonalInformationPageController::class, 'getPageContent']);
 Route::get('/content/signup-page', [SignupPageController::class, 'getPageContent']);
 Route::get('/content/signin-page', [SigninPageController::class, 'getPageContent']);
+Route::get('/content/forgot-password-page', [ForgotPasswordPageController::class, 'getPageContent']);
 
 // --- PUBLIC ROUTES (Login/Register) ---
 // User controller 

@@ -262,7 +262,8 @@
                             'change-information-pages.*',
                             'personal-information-pages.*',
                             'signup-pages.*',
-                            'signin-pages.*'
+                            'signin-pages.*',
+                            'forgot-password-pages.*'
                         ];
                     @endphp
                     <a class="nav-link d-flex justify-content-between align-items-center {{ request()->routeIs($contentRoutes) ? 'active' : '' }}"
@@ -410,6 +411,13 @@
                                 <a class="nav-link {{ request()->routeIs('signin-pages.*') ? 'active' : '' }}"
                                     href="{{ route('signin-pages.index') }}">
                                     <span>Signin Page</span>
+                                </a>
+                            </li>
+                            <!-- --- NEW: Forgot Password Page Link --- -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('forgot-password-pages.*') ? 'active' : '' }}"
+                                    href="{{ route('forgot-password-pages.index') }}">
+                                    <span>Forgot Password Page</span>
                                 </a>
                             </li>
 
