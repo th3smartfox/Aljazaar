@@ -99,8 +99,7 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'nullable|string|email',
-            'phone_number' => 'nullable|string',
+            'email_or_phone' => 'required|string',
             'password' => 'required|string',
         ]);
 
@@ -111,28 +110,29 @@ class UserController extends Controller
             ], 422);
         }
 
-        // Determine login field (email or phone_number)
-        $loginField = null;
-        if ($request->filled('email')) {
-            $loginField = 'email';
-        } elseif ($request->filled('phone_number')) {
-            $loginField = 'phone_number';
-        } else {
-            return response()->json(['status' => 'Email or Phone Number is required.'], 422);
-        }
+        $loginField = filter_var($request->email_or_phone, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number';
 
-        $user = User::where($loginField, $request->$loginField)->first();
+        $user = User::where($loginField, $request->email_or_phone)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['status' => 'Invalid credentials.'], 401);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid credentials.'
+            ], 401);
         }
 
         // Check if OTP is verified
         if (is_null($user->otp_verification)) {
-            return response()->json(['status' => 'Your OTP is not verified.'], 403);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Your OTP is not verified.'
+            ], 403);
         }
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        // Revoke existing tokens to prevent accumulation
+        $user->tokens()->delete();
+
+        $token = $user->createToken('royal-butcher')->plainTextToken;
 
         return response()->json([
             'status' => 'success',
