@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\SuccessfulPageController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WalletPageController;
 use App\Http\Controllers\Api\SignupPageController;
+use App\Http\Controllers\Api\SigninPageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -64,6 +65,7 @@ Route::get('/content/wallet-page', [WalletPageController::class, 'getPageContent
 Route::get('/content/change-information-page', [ChangeInformationPageController::class, 'getPageContent']);
 Route::get('/content/personal-information-page', [PersonalInformationPageController::class, 'getPageContent']);
 Route::get('/content/signup-page', [SignupPageController::class, 'getPageContent']);
+Route::get('/content/signin-page', [SigninPageController::class, 'getPageContent']);
 
 // --- PUBLIC ROUTES (Login/Register) ---
 // User controller 

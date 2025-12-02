@@ -261,7 +261,8 @@
                             'wallet-pages.*',
                             'change-information-pages.*',
                             'personal-information-pages.*',
-                            'signup-pages.*'
+                            'signup-pages.*',
+                            'signin-pages.*'
                         ];
                     @endphp
                     <a class="nav-link d-flex justify-content-between align-items-center {{ request()->routeIs($contentRoutes) ? 'active' : '' }}"
@@ -402,6 +403,13 @@
                                 <a class="nav-link {{ request()->routeIs('signup-pages.*') ? 'active' : '' }}"
                                     href="{{ route('signup-pages.index') }}">
                                     <span>Signup Page</span>
+                                </a>
+                            </li>
+                            <!-- --- NEW: Signin Page Link --- -->
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('signin-pages.*') ? 'active' : '' }}"
+                                    href="{{ route('signin-pages.index') }}">
+                                    <span>Signin Page</span>
                                 </a>
                             </li>
 
