@@ -69,6 +69,8 @@ class UserController extends Controller
 
         $user = User::where('phone_number', $request->phone_number)->first();
 
+        $token = $user->createToken('royal-butcher')->plainTextToken;
+
         // Update otp_verification time to now
         $user->otp_verification = Carbon::now();
         $user->save();
@@ -76,6 +78,7 @@ class UserController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Phone number verified successfully. You can now login.',
+            'token' => $token,
         ], 200);
     }
 
