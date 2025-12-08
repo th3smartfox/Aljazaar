@@ -22,12 +22,12 @@
 
                         <div class="form-group mb-3">
                             <label for="emailaddress" class="form-label">Email address</label>
-                            <input class="form-control" type="email" id="emailaddress" required="" placeholder="Enter your email" name="email" value="ismail@devop360.com">
+                            <input class="form-control" type="email" id="emailaddress" required="" placeholder="Enter your email" name="email" value="">
                         </div>
 
                         <div class="form-group mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input class="form-control" type="password" required="" id="password" placeholder="Enter your password" name="password" value="password">
+                            <input class="form-control" type="password" required="" id="password" placeholder="Enter your password" name="password" value="">
                         </div>
 
                         <div class="form-group d-flex mb-3">

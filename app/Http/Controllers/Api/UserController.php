@@ -126,7 +126,7 @@ class UserController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Your OTP is not verified.'
-            ], 403);
+            ], 401);
         }
 
         // Revoke existing tokens to prevent accumulation
