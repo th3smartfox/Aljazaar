@@ -9,55 +9,24 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Kreait\Firebase\Contract\Auth as FirebaseAuth;
+use Kreait\Firebase\Exception\Auth\FailedToVerifyToken;
 
 class UserController extends Controller
 {
-    /**
-     * Sign Up API
-     */
-    public function signup(Request $request)
+    protected $auth;
+
+    public function __construct(FirebaseAuth $auth)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|string|email|max:255|unique:users,email',
-            'phone_number' => 'required|string|min:10|max:15|unique:users,phone_number',
-            'city_id' => 'required|integer|exists:cities,id',
-            'password' => 'required|string|min:8',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'city_id' => $request->city_id,
-            'password' => Hash::make($request->password),
-            // otp_verification is initially null
-        ]);
-
-        // Assign 'user' role
-        $user->assignRole('user');
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Account created successfully. Please verify your phone number.',
-            'user' => $user->load('city'),
-        ], 201);
+        $this->auth = $auth;
     }
 
-    /**
-     * Verify OTP API
-     */
     public function verifyOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'phone_number' => 'required|string|exists:users,phone_number',
+            'phone_number' => 'required|string|min:10|max:15',
+            'verification_id' => 'required|string',
+            'city_id' => 'nullable|integer|exists:cities,id',
         ]);
 
         if ($validator->fails()) {
@@ -67,40 +36,63 @@ class UserController extends Controller
             ], 422);
         }
 
-        $user = User::where('phone_number', $request->phone_number)->first();
+        $idTokenString = $request->verification_id;
 
-        // Check if already verified
-        if (!is_null($user->otp_verification)) {
+        try {
+            $verifiedIdToken = $this->auth->verifyIdToken($idTokenString);
+            $uid = $verifiedIdToken->claims()->get('sub');
+        } catch (FailedToVerifyToken $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Phone number already verified. Please login.',
-            ], 400);
+                'message' => 'Invalid Firebase ID Token',
+            ], 401);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Token verification failed: ' . $e->getMessage(),
+            ], 401);
         }
 
-        // Revoke existing tokens to prevent accumulation
+        $user = User::firstOrCreate(
+            ['phone_number' => $request->phone_number],
+            [
+                'name' => 'User',
+                'city_id' => $request->city_id,
+            ]
+        );
+
+        $user->verification_id = $uid;
+        if ($request->filled('city_id')) {
+            $user->city_id = $request->city_id;
+        }
+
+        if (is_null($user->otp_verification)) {
+            $user->otp_verification = Carbon::now();
+        }
+
+        $user->save();
+
+        if (!$user->hasRole('user')) {
+            $user->assignRole('user');
+        }
+
         $user->tokens()->delete();
 
         $token = $user->createToken('royal-butcher')->plainTextToken;
 
-        // Update otp_verification time to now
-        $user->otp_verification = Carbon::now();
-        $user->save();
-
         return response()->json([
             'status' => 'success',
-            'message' => 'Phone number verified successfully. You can now login.',
+            'message' => 'User verified and logged in successfully.',
+            'user' => $user->load('city'),
             'token' => $token,
         ], 200);
     }
 
-    /**
-     * Login API
-     */
-    public function login(Request $request)
+
+    public function signUpCheck(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email_or_phone' => 'required|string',
-            'password' => 'required|string',
+            'phone_number' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -110,35 +102,37 @@ class UserController extends Controller
             ], 422);
         }
 
-        $loginField = filter_var($request->email_or_phone, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number';
+        $exists = User::where('phone_number', $request->phone_number)->exists();
 
-        $user = User::where($loginField, $request->email_or_phone)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$exists) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid credentials.'
-            ], 401);
+                'is_registered' => false,
+            ], 200);
         }
 
-        // Check if OTP is verified
-        if (is_null($user->otp_verification)) {
+        return response()->json([
+            'is_registered' => true,
+        ], 200);
+    }
+
+    public function logInCheck(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone_number' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Your OTP is not verified.'
-            ], 401);
+                'status' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        // Revoke existing tokens to prevent accumulation
-        $user->tokens()->delete();
-
-        $token = $user->createToken('royal-butcher')->plainTextToken;
+        $exists = User::where('phone_number', $request->phone_number)->exists();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Login successful.',
-            'user' => $user->load('city'),
-            'token' => $token,
+            'is_registered' => $exists,
         ], 200);
     }
 

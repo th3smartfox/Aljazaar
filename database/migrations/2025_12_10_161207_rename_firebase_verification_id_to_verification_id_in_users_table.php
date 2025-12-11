@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('otp_verification')->nullable()->after('email_verified_at');
+            $table->renameColumn('firebase_verification_id', 'verification_id');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('otp_verification');
+            $table->renameColumn('verification_id', 'firebase_verification_id');
         });
     }
 };
