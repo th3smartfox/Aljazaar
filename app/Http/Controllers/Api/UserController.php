@@ -56,7 +56,6 @@ class UserController extends Controller
         $user = User::firstOrCreate(
             ['phone_number' => $request->phone_number],
             [
-                'name' => 'User',
                 'city_id' => $request->city_id,
             ]
         );

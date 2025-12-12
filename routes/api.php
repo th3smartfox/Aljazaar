@@ -78,13 +78,12 @@ Route::post('/login-check', [UserController::class, 'logInCheck']);
 
 // --- NEW: Public Item Routes ---
 Route::get('/items', [ItemController::class, 'index']);
-Route::get('/items/hot-discounts', [ItemController::class, 'hotDiscounts']);
-Route::get('/items/most-favorite', [ItemController::class, 'mostFavorite']);
+Route::get('/items/search', [ItemController::class, 'search']);
 Route::get('/items/{item}', [ItemController::class, 'show']);
 
 // --- NEW: Public Category Routes ---
 Route::get('/categories/new-order', [CategoryController::class, 'newOrder']);
-Route::get('/categories/{categoryId}/items', [CategoryController::class, 'itemsByCategory']);
+Route::get('/categories/items/{categoryId}', [CategoryController::class, 'itemsByCategory']);
 
 
 // --- PROTECTED ROUTES ---

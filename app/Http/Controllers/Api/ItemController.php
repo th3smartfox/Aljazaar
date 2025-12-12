@@ -12,50 +12,48 @@ use Illuminate\Http\Request;
 class ItemController extends Controller
 {
     /**
-     * API 1: Fetch all active items (paginated)
-     * Recently uploaded items will come first.
+     * API 1: Fetch items based on type
+     * Query Params: type = hot-discount | top-picks | order-again
      */
     public function index(Request $request)
     {
-        // Eager load category, show only active items, order by latest
-        $items = Item::with('category:id,name') // Sirf category ki ID aur Name fetch karein
-            ->where('status', true) // Sirf active items dikhayein
-            ->latest() // Shorthand for orderBy('created_at', 'DESC')
-            ->paginate(15); // Mobile app ke liye pagination zaroori hai
+        $type = $request->query('type');
+        $query = Item::with('category:id,name')->where('status', true);
 
-        return ItemSummaryResource::collection($items);
-    }
+        if ($type === 'hot-discount') {
+            // Items with highest discount first
+            $query->where('discount_percent', '>', 0)
+                ->orderBy('discount_percent', 'DESC');
+        } elseif ($type === 'top-picks') {
+            // Most ordered items (Future logic)
+            // Currently just returning latest items
+            $query->latest();
+        } elseif ($type === 'order-again') {
+            // User's previous order items
+            $user = $request->user('sanctum');
 
-    /**
-     * API 2: Fetch items with the highest discount (Hot Discounts)
-     * Items with greater discount_percent will come first.
-     */
-    public function hotDiscounts()
-    {
-        // Eager load category, show active items, only where discount > 0
-        $items = Item::with('category:id,name')
-            ->where('status', true) // Sirf active items
-            // ->where('discount_percent', '>', 0) // Sirf discount wale items
-            ->orderBy('discount_percent', 'DESC') // Sabse zyada discount wale pehle
-            ->limit(10) // Top 10 results
-            ->get();
+            if ($user) {
+                // Get item IDs from user's orders
+                $itemIds = \App\Models\OrderItem::whereHas('order', function ($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                })->pluck('item_id')->unique();
 
-        return ItemSummaryResource::collection($items);
-    }
+                $query->whereIn('id', $itemIds);
+            } else {
+                // If not authenticated or no orders, maybe return empty or popular?
+                // For now, let's return empty to be safe/strict about "order again"
+                // Or we can just return latest if we want to show something.
+                // User said "user k previous order items", so strictly previous items.
+                if (!$user) {
+                    return response()->json(['data' => [], 'meta' => ['total' => 0]], 200);
+                }
+            }
+        } else {
+            // Default: Latest items
+            $query->latest();
+        }
 
-    /**
-     * API 4: Fetch most favorite items (Mostly bought items)
-     * Currently returns items, will be upgraded in future based on order data
-     */
-    public function mostFavorite()
-    {
-        // Eager load category, show active items
-        // Future: Will filter based on order count
-        $items = Item::with('category:id,name')
-            ->where('status', true) // Sirf active items
-            ->latest() // Currently showing latest items
-            ->limit(10) // Top 10 results
-            ->get();
+        $items = $query->paginate(15);
 
         return ItemSummaryResource::collection($items);
     }
@@ -68,12 +66,12 @@ class ItemController extends Controller
         if (!$item->status) {
             return response()->json(['message' => 'Item not found'], 404);
         }
-        
+
         $item->load('category:id,name');
 
         // Fetch order customization page content
         $pageContent = OrderCustomizationPage::where('status', true)->latest()->first();
-        
+
         $pageContentData = [
             'title' => 'Order Customization',
             'text_add_ons' => 'Add-Ons',
@@ -93,5 +91,27 @@ class ItemController extends Controller
         }
 
         return new ItemResource($item, $pageContentData);
+    }
+    /**
+     * API 5: Search items by name or description
+     */
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+
+        if (!$search) {
+            return response()->json(['message' => 'Search parameter is required'], 400);
+        }
+
+        $items = Item::with('category:id,name')
+            ->where('status', true)
+            ->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(15);
+
+        return ItemSummaryResource::collection($items);
     }
 }

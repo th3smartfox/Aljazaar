@@ -20,7 +20,7 @@ class CategoryController extends Controller
     {
         // Fetch new order page content
         $page = NewOrderPage::where('status', true)->latest()->first();
-        
+
         $pageContent = [
             'title' => 'New Order',
         ];
@@ -33,9 +33,11 @@ class CategoryController extends Controller
 
         // Fetch categories with items count
         $categories = Category::where('status', true)
-            ->withCount(['items' => function ($query) {
-                $query->where('status', true);
-            }])
+            ->withCount([
+                'items' => function ($query) {
+                    $query->where('status', true);
+                }
+            ])
             ->get()
             ->map(function ($category) {
                 return [
@@ -68,7 +70,7 @@ class CategoryController extends Controller
             ->where('category_id', $categoryId)
             ->where('status', true)
             ->latest()
-            ->get();
+            ->paginate(15);
 
         return response()->json([
             'category' => [
@@ -76,7 +78,7 @@ class CategoryController extends Controller
                 'name' => $category->name,
                 'image' => $category->image ? Storage::url($category->image) : null,
             ],
-            'items' => ItemSummaryResource::collection($items),
+            'items' => ItemSummaryResource::collection($items)->response()->getData(true),
         ]);
     }
 }
