@@ -11,7 +11,7 @@ class Item extends Model
 {
     use HasFactory;
 
-        protected $fillable = [
+    protected $fillable = [
         'category_id',
         'name',
         'description',
@@ -22,16 +22,26 @@ class Item extends Model
         'customization_options',
     ];
 
-        protected $casts = [
+    protected $casts = [
         'status' => 'boolean',
         'base_price' => 'decimal:2',
         'discount_percent' => 'decimal:2',
         'customization_options' => 'array', // Automatically handle JSON
     ];
 
-        public function category()
+    public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function addOns()
+    {
+        return $this->hasMany(AddOn::class);
     }
 
     protected function discountedPrice(): Attribute

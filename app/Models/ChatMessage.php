@@ -5,29 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cart extends Model
+class ChatMessage extends Model
 {
-
     use HasFactory;
 
     protected $fillable = [
         'user_id',
-        'item_id',
-        'quantity',
+        'sender_type',
+        'message',
+        'is_read',
     ];
 
-    public function item()
-    {
-        return $this->belongsTo(Item::class);
-    }
+    protected $casts = [
+        'is_read' => 'boolean',
+    ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function cartItemAddOns()
-    {
-        return $this->hasMany(CartItemAddOn::class);
     }
 }

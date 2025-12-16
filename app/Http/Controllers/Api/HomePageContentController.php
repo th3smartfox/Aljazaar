@@ -24,7 +24,7 @@ class HomePageContentController extends Controller
         // Get drawer page content (needed for both cases)
         $drawerPage = DrawerPage::where('status', true)->latest()->first();
         $drawerPageData = null;
-        
+
         if ($drawerPage) {
             $drawerPageData = new DrawerPageResource($drawerPage);
         } else {
@@ -98,7 +98,7 @@ class HomePageContentController extends Controller
                 ],
                 'order_again' => [],
                 'page_content' => [
-                    'drawer_items' => $drawerItems,
+                    'drawer_items' => [],
                 ],
             ]);
         }

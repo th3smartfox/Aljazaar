@@ -23,7 +23,14 @@ class ItemSummaryResource extends JsonResource
             'discount_percent' => (float) $this->discount_percent,
             'discounted_price' => (float) $this->discounted_price,
             'category' => $this->whenLoaded('category'),
-            'add_ons' => $this->customization_options ?? [], 
+            'add_ons' => $this->addOns->map(function ($addOn) {
+                return [
+                    'id' => $addOn->id,
+                    'name' => $addOn->name,
+                    'price' => (float) $addOn->price,
+                ];
+            }),
+            'is_wishlisted' => $request->user('sanctum') ? $this->wishlists()->where('user_id', $request->user('sanctum')->id)->exists() : false,
         ];
     }
 }

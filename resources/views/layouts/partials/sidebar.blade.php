@@ -237,6 +237,15 @@
                     </a>
                 </li>
 
+                <!-- --- Chat Link --- -->
+                <li class="nav-item my-1">
+                    <a class="nav-link d-flex align-items-center {{ request()->routeIs('chat.*') ? 'active' : '' }}"
+                        href="{{ route('chat.index') }}">
+                        <i data-feather="message-square" class="me-2" style="width: 18px;"></i>
+                        <span> Chat </span>
+                    </a>
+                </li>
+
                 <!-- ==== DYNAMIC CONTENT DROPDOWN (FIXED UI) ==== -->
                 <li class="nav-item my-1">
                     <!-- Dropdown Toggle Link -->

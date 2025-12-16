@@ -27,6 +27,8 @@ use App\Http\Controllers\Api\WalletPageController;
 use App\Http\Controllers\Api\SignupPageController;
 use App\Http\Controllers\Api\SigninPageController;
 use App\Http\Controllers\Api\ForgotPasswordPageController;
+use App\Http\Controllers\Api\WishlistController;
+use App\Http\Controllers\Api\ChatController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -90,6 +92,7 @@ Route::get('/categories/items/{categoryId}', [CategoryController::class, 'itemsB
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/profile', [UserController::class, 'updateProfile']);
+    Route::post('/profile/image', [UserController::class, 'uploadProfileImage']);
     Route::get('/user', [UserController::class, 'getUser']);
 
     // Logout
@@ -107,4 +110,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- NEW: Address Module Routes ---
     Route::apiResource('addresses', AddressController::class);
     Route::patch('/addresses/{address}/set-default', [AddressController::class, 'setDefault']);
+
+    // --- NEW: Wishlist Module Routes ---
+    Route::get('/wishlist', [WishlistController::class, 'index']);
+    Route::post('/wishlist/toggle', [WishlistController::class, 'toggle']);
+
+    // --- NEW: Chat Module Routes ---
+    Route::get('/chat/messages', [ChatController::class, 'index']);
+    Route::post('/chat/send', [ChatController::class, 'store']);
 });

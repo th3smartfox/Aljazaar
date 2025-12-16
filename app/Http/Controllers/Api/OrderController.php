@@ -21,14 +21,15 @@ class OrderController extends Controller
      */
     public function createOrder(Request $request)
     {
+        
+        $user = Auth::user();
         $request->validate([
-            'address_id' => 'required|exists:addresses,id,user_id,' . Auth::id(),
+            'address_id' => 'required|exists:addresses,id,user_id,' . $user->id,
             'payment_method' => 'required|string|in:cod,credit_card,paypal', // Payment methods
             'delivery_notes' => 'nullable|string',
             // 'delivery_slot' => 'required|string', // if needed
         ]);
 
-        $user = Auth::user();
         $cartItems = Cart::with('item')->where('user_id', $user->id)->get();
 
         if ($cartItems->isEmpty()) {

@@ -15,9 +15,21 @@ class CartResource extends JsonResource
      */
     public function toArray($request)
     {
+        $itemData = (new ItemSummaryResource($this->whenLoaded('item')))->resolve();
+
+        // Override item's add_ons with the selected ones from cart
+        $itemData['add_ons'] = $this->cartItemAddOns->map(function ($addOn) {
+            return [
+                'id' => $addOn->add_on_id,
+                'name' => $addOn->add_on_name,
+                'price' => (float) $addOn->add_on_price,
+            ];
+        });
+
         return [
+            'cart_item_id' => (string) $this->id,
             'quantity' => (int) $this->quantity,
-            'item' => new ItemSummaryResource($this->whenLoaded('item')),
+            'item' => $itemData,
         ];
     }
 }

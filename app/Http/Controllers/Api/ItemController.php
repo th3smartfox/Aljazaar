@@ -17,6 +17,7 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
+
         $type = $request->query('type');
         $query = Item::with('category:id,name')->where('status', true);
 
@@ -29,16 +30,20 @@ class ItemController extends Controller
             // Currently just returning latest items
             $query->latest();
         } elseif ($type === 'order-again') {
+
             // User's previous order items
             $user = $request->user('sanctum');
 
+
             if ($user) {
                 // Get item IDs from user's orders
-                $itemIds = \App\Models\OrderItem::whereHas('order', function ($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                })->pluck('item_id')->unique();
+                // $itemIds = \App\Models\OrderItem::whereHas('order', function ($q) use ($user) {
+                //     $q->where('user_id', $user->id);
+                // })->pluck('item_id')->unique();
 
-                $query->whereIn('id', $itemIds);
+                // $query->whereIn('id', $itemIds);
+
+                return response()->json(['data' => [], 'meta' => ['total' => 0]], 200);
             } else {
                 // If not authenticated or no orders, maybe return empty or popular?
                 // For now, let's return empty to be safe/strict about "order again"
@@ -67,7 +72,7 @@ class ItemController extends Controller
             return response()->json(['message' => 'Item not found'], 404);
         }
 
-        $item->load('category:id,name');
+        $item->load(['category:id,name', 'addOns']);
 
         // Fetch order customization page content
         $pageContent = OrderCustomizationPage::where('status', true)->latest()->first();

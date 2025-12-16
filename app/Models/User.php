@@ -74,4 +74,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Address::class);
     }
+
+    protected $appends = ['profile_image_url'];
+
+    public function getProfileImageUrlAttribute()
+    {
+        return $this->profile_image ? asset(\Illuminate\Support\Facades\Storage::url($this->profile_image)) : null;
+    }
+
+    public function chatMessages(): HasMany
+    {
+        return $this->hasMany(ChatMessage::class);
+    }
 }

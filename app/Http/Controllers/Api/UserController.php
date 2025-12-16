@@ -176,4 +176,38 @@ class UserController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out successfully.']);
     }
+
+    public function uploadProfileImage(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user = $request->user();
+
+        if ($request->hasFile('profile_image')) {
+            // Delete old image if exists
+            if ($user->profile_image) {
+                // Assuming standard storage path, might need adjustment based on how it was stored
+                // Storage::delete($user->profile_image); 
+                // For now, let's just overwrite/store new one. Laravel's store() handles unique names.
+            }
+
+            $path = $request->file('profile_image')->store('profile_images', 'public');
+            $user->profile_image = $path;
+            $user->save();
+
+            return response()->json([
+                'message' => 'Profile image uploaded successfully.',
+                'user' => $user->load('city'),
+                'image_url' => \Illuminate\Support\Facades\Storage::url($path),
+            ], 200);
+        }
+
+        return response()->json(['message' => 'No image uploaded.'], 400);
+    }
 }

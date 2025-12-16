@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\ChatController;
 
 require __DIR__ . '/auth.php';
 
@@ -90,4 +91,9 @@ Route::group(['prefix' => '/dashboard', 'middleware' => ['auth', 'admin.only']],
     Route::resource('signup-pages', SignupPageController::class);
     Route::resource('signin-pages', SigninPageController::class);
     Route::resource('forgot-password-pages', ForgotPasswordPageController::class);
+
+    // --- NEW: Chat Management ---
+    Route::get('chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('chat/{user}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('chat/{user}', [ChatController::class, 'store'])->name('chat.store');
 });
