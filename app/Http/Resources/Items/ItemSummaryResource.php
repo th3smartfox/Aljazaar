@@ -18,7 +18,7 @@ class ItemSummaryResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'image_url' => $this->image ? Storage::url($this->image) : null,
+            'image_url' => $this->image ? asset(Storage::url($this->image)) : null,
             'base_price' => (float) $this->base_price,
             'discount_percent' => (float) $this->discount_percent,
             'discounted_price' => (float) $this->discounted_price,

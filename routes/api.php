@@ -106,6 +106,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/cart/update', [CartController::class, 'updateCartItem']);
     Route::delete('/cart/remove', [CartController::class, 'removeCartItem']);
 
+    // --- NEW: Checkout Module Routes ---
+    Route::get('/checkout/init', [\App\Http\Controllers\Api\CheckoutController::class, 'init']);
+
 
     // --- NEW: Address Module Routes ---
     Route::apiResource('addresses', AddressController::class);

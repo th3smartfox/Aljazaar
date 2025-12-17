@@ -15,13 +15,16 @@ class AddressController extends Controller
      */
     public function index()
     {
-        $addresses = Auth::user()->addresses()->with('user')->latest()->get();
-        
+        $addresses = Auth::user()->addresses()->with(['user', 'city'])->latest()->get();
+
         return response()->json([
             'addresses' => AddressResource::collection($addresses)
         ], 200);
     }
 
+    /**
+     * API 2: Store a new address
+     */
     /**
      * API 2: Store a new address
      */
@@ -32,11 +35,13 @@ class AddressController extends Controller
             'phone' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',
             'address_title' => 'required|string|max:100',
-            'address_line' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
             'street_number' => 'nullable|string|max:100',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
-            'landmarks' => 'nullable|string|max:255',
+            'landmark' => 'nullable|string|max:255',
+            'nearest_landmark' => 'nullable|string|max:255',
+            'city_id' => 'required|exists:cities,id',
             'is_default' => 'required|boolean',
         ]);
 
@@ -46,9 +51,14 @@ class AddressController extends Controller
             Address::where('user_id', $userId)->update(['is_default' => false]);
         }
 
-        $address = Address::create($validated + ['user_id' => $userId]);
-        
-        $address->load('user');
+        // Map 'address' to 'address_line'
+        $data = $validated;
+        $data['address_line'] = $validated['address'];
+        unset($data['address']);
+
+        $address = Address::create($data + ['user_id' => $userId]);
+
+        $address->load('user', 'city');
 
         return response()->json([
             'message' => 'Address added successfully.',
@@ -70,11 +80,13 @@ class AddressController extends Controller
             'phone' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',
             'address_title' => 'required|string|max:100',
-            'address_line' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
             'street_number' => 'nullable|string|max:100',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
-            'landmarks' => 'nullable|string|max:255',
+            'landmark' => 'nullable|string|max:255',
+            'nearest_landmark' => 'nullable|string|max:255',
+            'city_id' => 'required|exists:cities,id',
             'is_default' => 'required|boolean',
         ]);
 
@@ -84,9 +96,14 @@ class AddressController extends Controller
                 ->update(['is_default' => false]);
         }
 
-        $address->update($validated);
-        
-        $address->load('user');
+        // Map 'address' to 'address_line'
+        $data = $validated;
+        $data['address_line'] = $validated['address'];
+        unset($data['address']);
+
+        $address->update($data);
+
+        $address->load('user', 'city');
 
         return response()->json([
             'message' => 'Address updated successfully.',
@@ -107,7 +124,7 @@ class AddressController extends Controller
             $newDefault = Address::where('user_id', Auth::id())
                 ->where('id', '!=', $address->id)
                 ->first();
-            
+
             if ($newDefault) {
                 $newDefault->update(['is_default' => true]);
             }
@@ -130,8 +147,8 @@ class AddressController extends Controller
         Address::where('user_id', Auth::id())->update(['is_default' => false]);
         $address->update(['is_default' => true]);
 
-        $addresses = Auth::user()->addresses()->with('user')->latest()->get();
-        
+        $addresses = Auth::user()->addresses()->with(['user', 'city'])->latest()->get();
+
         return response()->json([
             'message' => 'Default address updated successfully.',
             'addresses' => AddressResource::collection($addresses)

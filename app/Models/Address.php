@@ -19,7 +19,9 @@ class Address extends Model
         'street_number',
         'latitude',
         'longitude',
-        'landmarks',
+        'landmark',
+        'nearest_landmark',
+        'city_id',
         'is_default',
     ];
 
@@ -33,5 +35,10 @@ class Address extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(\Nnjeim\World\Models\City::class, 'city_id');
     }
 }
