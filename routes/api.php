@@ -121,4 +121,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- NEW: Chat Module Routes ---
     Route::get('/chat/messages', [ChatController::class, 'index']);
     Route::post('/chat/send', [ChatController::class, 'store']);
+
+    // --- NEW: Order Module Routes ---
+    Route::post('/orders/create', [\App\Http\Controllers\Api\OrderController::class, 'createOrder']);
+    Route::get('/orders/active', [\App\Http\Controllers\Api\OrderController::class, 'getActiveOrders']);
+    Route::get('/orders/closed', [\App\Http\Controllers\Api\OrderController::class, 'getClosedOrders']);
+    Route::get('/orders/{order}', [\App\Http\Controllers\Api\OrderController::class, 'trackOrder']);
+    Route::post('/orders/{order}/reorder', [\App\Http\Controllers\Api\OrderController::class, 'reorder']);
+
+    // --- NEW: Payment Module Routes ---
+    Route::post('/payments/complete', [\App\Http\Controllers\Api\PaymentController::class, 'completePayment']);
 });

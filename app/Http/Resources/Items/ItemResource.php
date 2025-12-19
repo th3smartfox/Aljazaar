@@ -27,7 +27,7 @@ class ItemResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'image_url' => $this->image ? Storage::url($this->image) : null,
+            'image_url' => $this->image ? asset(Storage::url($this->image)) : null,
             'base_price' => (float) $this->base_price,
             'discount_percent' => (float) $this->discount_percent,
             'discounted_price' => (float) $this->discounted_price,
@@ -37,7 +37,7 @@ class ItemResource extends JsonResource
             'created_at' => $this->created_at->toDateTimeString(),
             'add_ons' => $this->addOns->map(function ($addOn) {
                 return [
-                    'id' => $addOn->id,
+                    'id' => (int) $addOn->id,
                     'name' => $addOn->name,
                     'price' => (float) $addOn->price,
                 ];

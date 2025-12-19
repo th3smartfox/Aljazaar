@@ -21,13 +21,11 @@ class OrderController extends Controller
      */
     public function createOrder(Request $request)
     {
-        
         $user = Auth::user();
         $request->validate([
             'address_id' => 'required|exists:addresses,id,user_id,' . $user->id,
-            'payment_method' => 'required|string|in:cod,credit_card,paypal', // Payment methods
+            'payment_method' => 'required|string|in:cod,credit_card,paypal,apple_pay,google_pay',
             'delivery_notes' => 'nullable|string',
-            // 'delivery_slot' => 'required|string', // if needed
         ]);
 
         $cartItems = Cart::with('item')->where('user_id', $user->id)->get();
@@ -38,7 +36,7 @@ class OrderController extends Controller
 
         $subTotal = 0;
         $discountAmount = 0;
-        $deliveryFee = 00.00; // Example: Fixed delivery fee
+        $deliveryFee = 00.00;
 
         DB::beginTransaction();
         try {
@@ -46,33 +44,36 @@ class OrderController extends Controller
             $order = Order::create([
                 'user_id' => $user->id,
                 'address_id' => $request->address_id,
-                'order_number' => 'RBO-' . time() . '-' . $user->id, // Unique Order Number
-                'sub_total' => 0, // Placeholder
+                'order_number' => 'RBO-' . time() . '-' . $user->id,
+                'sub_total' => 0,
                 'discount_amount' => $discountAmount,
                 'delivery_fee' => $deliveryFee,
-                'total_amount' => 0, // Placeholder
+                'total_amount' => 0,
                 'payment_method' => $request->payment_method,
                 'payment_status' => 'pending',
-                'status' => 'pending', // Order status
+                'status' => 'pending',
                 'delivery_notes' => $request->delivery_notes,
             ]);
 
             // Add items to the order
             foreach ($cartItems as $cartItem) {
-                if (!$cartItem->item) continue; // Skip if item is deleted
-                
-                $itemPrice = $cartItem->item->discounted_price;
-                $subTotal += $itemPrice * $cartItem->quantity;
+                if (!$cartItem->item)
+                    continue;
 
-                // Add-ons price
-                $addOnsTotal = 0;
-                $selectedAddOns = $cartItem->selected_add_ons ?? []; // Assuming cart has this
-                if (is_array($selectedAddOns)) {
-                    foreach($selectedAddOns as $addOn) {
-                        $addOnsTotal += $addOn['price'] ?? 0;
-                    }
-                }
-                $subTotal += $addOnsTotal * $cartItem->quantity;
+                $itemPrice = $cartItem->item->discounted_price;
+                $cartItem->load('cartItemAddOns');
+                $addOnsPrice = $cartItem->cartItemAddOns->sum('add_on_price');
+                $lineTotal = ($itemPrice + $addOnsPrice) * $cartItem->quantity;
+
+                $subTotal += $lineTotal;
+
+                $addOnsData = $cartItem->cartItemAddOns->map(function ($addOn) {
+                    return [
+                        'id' => $addOn->add_on_id,
+                        'name' => $addOn->add_on_name,
+                        'price' => $addOn->add_on_price
+                    ];
+                })->toArray();
 
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -80,18 +81,23 @@ class OrderController extends Controller
                     'item_name' => $cartItem->item->name,
                     'quantity' => $cartItem->quantity,
                     'price_at_purchase' => $itemPrice,
-                    'selected_add_ons' => $selectedAddOns,
+                    'selected_add_ons' => $addOnsData,
                 ]);
             }
 
-            // Update final totals in the order
             $order->sub_total = $subTotal;
             $order->total_amount = ($subTotal - $discountAmount) + $deliveryFee;
+
+            // For COD, we might want to confirm the order immediately, 
+            // but for now we follow the strict "create order" instruction.
+            if ($request->payment_method === 'cod') {
+                $order->status = 'confirmed';
+            }
+
             $order->save();
 
-            // Clear the user's cart
             Cart::where('user_id', $user->id)->delete();
-            
+
             DB::commit();
 
             return response()->json([
@@ -111,10 +117,10 @@ class OrderController extends Controller
     public function getActiveOrders()
     {
         $orders = Auth::user()->orders()
-                    ->whereNotIn('status', ['delivered', 'cancelled'])
-                    ->with('items.item')
-                    ->latest()
-                    ->get();
+            ->whereNotIn('status', ['delivered', 'cancelled'])
+            ->with('items.item')
+            ->latest()
+            ->get();
         return OrderResource::collection($orders);
     }
 
@@ -124,10 +130,10 @@ class OrderController extends Controller
     public function getClosedOrders()
     {
         $orders = Auth::user()->orders()
-                    ->whereIn('status', ['delivered', 'cancelled'])
-                    ->with('items.item')
-                    ->latest()
-                    ->get();
+            ->whereIn('status', ['delivered', 'cancelled'])
+            ->with('items.item')
+            ->latest()
+            ->get();
         return OrderResource::collection($orders);
     }
 

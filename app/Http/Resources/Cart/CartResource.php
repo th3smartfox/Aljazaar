@@ -20,7 +20,7 @@ class CartResource extends JsonResource
         // Override item's add_ons with the selected ones from cart
         $itemData['add_ons'] = $this->cartItemAddOns->map(function ($addOn) {
             return [
-                'id' => $addOn->add_on_id,
+                'id' => (int) $addOn->add_on_id,
                 'name' => $addOn->add_on_name,
                 'price' => (float) $addOn->add_on_price,
             ];

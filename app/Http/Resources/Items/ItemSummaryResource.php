@@ -25,7 +25,7 @@ class ItemSummaryResource extends JsonResource
             'category' => $this->whenLoaded('category'),
             'add_ons' => $this->addOns->map(function ($addOn) {
                 return [
-                    'id' => $addOn->id,
+                    'id' => (int) $addOn->id,
                     'name' => $addOn->name,
                     'price' => (float) $addOn->price,
                 ];

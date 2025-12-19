@@ -47,6 +47,11 @@ class AddressController extends Controller
 
         $userId = Auth::id();
 
+        // Check if this is the first address
+        if (Address::where('user_id', $userId)->count() === 0) {
+            $validated['is_default'] = true;
+        }
+
         if ($validated['is_default']) {
             Address::where('user_id', $userId)->update(['is_default' => false]);
         }
@@ -120,10 +125,29 @@ class AddressController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
+        $userId = Auth::id();
+        $addressCount = Address::where('user_id', $userId)->count();
+
+        // Prevent deletion if it's the only address
+        if ($addressCount <= 1) {
+            return response()->json(['message' => 'Cannot delete the only address.'], 400);
+        }
+
         if ($address->is_default) {
-            $newDefault = Address::where('user_id', Auth::id())
+            // Find the address created immediately after the current one
+            $newDefault = Address::where('user_id', $userId)
                 ->where('id', '!=', $address->id)
+                ->where('created_at', '>=', $address->created_at)
+                ->orderBy('created_at', 'asc')
                 ->first();
+
+            // If no newer address, fallback to the latest one (previous)
+            if (!$newDefault) {
+                $newDefault = Address::where('user_id', $userId)
+                    ->where('id', '!=', $address->id)
+                    ->latest()
+                    ->first();
+            }
 
             if ($newDefault) {
                 $newDefault->update(['is_default' => true]);

@@ -12,7 +12,13 @@ class OrderItemResource extends JsonResource
         return [
             'quantity' => $this->quantity,
             'price_at_purchase' => (float) $this->price_at_purchase,
-            'selected_add_ons' => $this->selected_add_ons,
+            'selected_add_ons' => collect($this->selected_add_ons)->map(function ($addOn) {
+                if (is_array($addOn)) {
+                    $addOn['id'] = (int) ($addOn['id'] ?? 0);
+                    $addOn['price'] = (float) ($addOn['price'] ?? 0);
+                }
+                return $addOn;
+            }),
             'item' => new ItemSummaryResource($this->whenLoaded('item')),
         ];
     }
