@@ -86,4 +86,78 @@ class User extends Authenticatable
     {
         return $this->hasMany(ChatMessage::class);
     }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function wishlists(): HasMany
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(UserSubscription::class);
+    }
+
+    public function activeSubscription()
+    {
+        return $this->hasOne(UserSubscription::class)
+            ->active()
+            ->latest();
+    }
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function bankAccounts(): HasMany
+    {
+        return $this->hasMany(BankAccount::class);
+    }
+
+    public function paymentCards(): HasMany
+    {
+        return $this->hasMany(PaymentCard::class);
+    }
+
+    public function defaultPaymentCard()
+    {
+        return $this->hasOne(PaymentCard::class)->where('is_default', true);
+    }
+
+    public function userRewards(): HasMany
+    {
+        return $this->hasMany(UserReward::class);
+    }
+
+    public function rewards()
+    {
+        return $this->belongsToMany(Reward::class, 'user_rewards')
+            ->withPivot('is_redeemed', 'redeemed_at')
+            ->withTimestamps();
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function booted()
+    {
+        static::created(function ($user) {
+            // Auto-create wallet for new users
+            Wallet::create([
+                'user_id' => $user->id,
+                'balance' => 0.00,
+                'points' => 0.00,
+            ]);
+        });
+    }
 }

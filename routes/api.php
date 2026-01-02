@@ -29,6 +29,10 @@ use App\Http\Controllers\Api\SigninPageController;
 use App\Http\Controllers\Api\ForgotPasswordPageController;
 use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\WalletController;
+use App\Http\Controllers\Api\CardController;
+use App\Http\Controllers\Api\RewardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -70,6 +74,8 @@ Route::get('/content/personal-information-page', [PersonalInformationPageControl
 Route::get('/content/signup-page', [SignupPageController::class, 'getPageContent']);
 Route::get('/content/signin-page', [SigninPageController::class, 'getPageContent']);
 Route::get('/content/forgot-password-page', [ForgotPasswordPageController::class, 'getPageContent']);
+Route::get('/content/account-tier-page', [SubscriptionController::class, 'getAccountTierPage']);
+Route::get('/content/redeem-rewards-page', [RewardController::class, 'getRedeemRewardsPage']);
 
 // --- PUBLIC ROUTES (Login/Register) ---
 // User controller 
@@ -131,4 +137,30 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- NEW: Payment Module Routes ---
     Route::post('/payments/complete', [\App\Http\Controllers\Api\PaymentController::class, 'completePayment']);
+
+    // --- NEW: Subscription Module Routes ---
+    Route::get('/subscriptions/plans', [SubscriptionController::class, 'getPlans']);
+    Route::post('/subscriptions/subscribe', [SubscriptionController::class, 'subscribe']);
+    Route::get('/subscriptions/user-status', [SubscriptionController::class, 'getUserStatus']);
+    Route::post('/subscriptions/cancel', [SubscriptionController::class, 'cancel']);
+
+    // --- NEW: Wallet Module Routes ---
+    Route::get('/content/wallet-page', [WalletController::class, 'getWalletPage']);
+    Route::post('/wallet/withdraw', [WalletController::class, 'withdraw']);
+    Route::post('/wallet/transfer', [WalletController::class, 'transfer']);
+    Route::post('/wallet/add-funds', [WalletController::class, 'addFunds']);
+    Route::get('/wallet/transactions', [WalletController::class, 'getTransactions']);
+
+    // --- NEW: Payment Cards Module Routes ---
+    Route::get('/cards', [CardController::class, 'index']);
+    Route::post('/cards', [CardController::class, 'store']);
+    Route::put('/cards/{id}', [CardController::class, 'update']);
+    Route::delete('/cards/{id}', [CardController::class, 'destroy']);
+    Route::post('/cards/{id}/set-default', [CardController::class, 'setDefault']);
+
+    // --- NEW: Rewards Module Routes ---
+    Route::get('/rewards', [RewardController::class, 'index']);
+    Route::get('/rewards/user', [RewardController::class, 'userRewards']);
+    Route::post('/rewards/{id}/redeem', [RewardController::class, 'redeem']);
+    Route::post('/rewards/validate-code', [RewardController::class, 'validateCode']);
 });

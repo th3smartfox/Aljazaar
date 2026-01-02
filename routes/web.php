@@ -24,6 +24,13 @@ use App\Http\Controllers\Admin\ForgotPasswordPageController;
 use App\Http\Controllers\Admin\SplashScreenController;
 use App\Http\Controllers\Admin\SuccessfulPageController;
 use App\Http\Controllers\Admin\WalletPageController;
+use App\Http\Controllers\Admin\SubscriptionPlanController;
+use App\Http\Controllers\Admin\SubscriptionController;
+use App\Http\Controllers\Admin\WalletController;
+use App\Http\Controllers\Admin\AccountTierPageController;
+use App\Http\Controllers\Admin\PaymentCardController;
+use App\Http\Controllers\Admin\RewardController;
+use App\Http\Controllers\Admin\RedeemRewardsPageController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
@@ -96,4 +103,34 @@ Route::group(['prefix' => '/dashboard', 'middleware' => ['auth', 'admin.only']],
     Route::get('chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('chat/{user}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('chat/{user}', [ChatController::class, 'store'])->name('chat.store');
+
+    // --- NEW: Subscription Management ---
+    Route::resource('subscription-plans', SubscriptionPlanController::class);
+    Route::get('user-subscriptions', [SubscriptionController::class, 'index'])->name('user-subscriptions.index');
+    Route::post('user-subscriptions/{id}/cancel', [SubscriptionController::class, 'cancel'])->name('user-subscriptions.cancel');
+
+    // --- NEW: Wallet Management ---
+    Route::get('wallets', [WalletController::class, 'index'])->name('wallets.index');
+    Route::get('wallets/{userId}', [WalletController::class, 'show'])->name('wallets.show');
+    Route::post('wallets/{userId}/adjust', [WalletController::class, 'adjustBalance'])->name('wallets.adjust-balance');
+    Route::get('wallet-transactions', [WalletController::class, 'transactions'])->name('wallet-transactions.index');
+
+    // --- NEW: Account Tier Page Content ---
+    Route::resource('account-tier-pages', AccountTierPageController::class);
+
+    // --- NEW: Redeem Rewards Page Content ---
+    Route::resource('redeem-rewards-pages', RedeemRewardsPageController::class);
+
+    // --- NEW: Payment Cards Management ---
+    Route::get('payment-cards', [PaymentCardController::class, 'index'])->name('payment-cards.index');
+    Route::get('payment-cards/user/{user}', [PaymentCardController::class, 'userCards'])->name('payment-cards.user');
+    Route::post('payment-cards/{paymentCard}/toggle-default', [PaymentCardController::class, 'toggleDefault'])->name('payment-cards.toggle-default');
+    Route::delete('payment-cards/{paymentCard}', [PaymentCardController::class, 'destroy'])->name('payment-cards.destroy');
+
+    // --- NEW: Rewards Management ---
+    Route::resource('rewards', RewardController::class);
+    Route::get('rewards/{reward}/assign', [RewardController::class, 'assignForm'])->name('rewards.assign-form');
+    Route::post('rewards/{reward}/assign', [RewardController::class, 'assign'])->name('rewards.assign');
+    Route::post('rewards/{reward}/assign-all', [RewardController::class, 'assignAll'])->name('rewards.assign-all');
+    Route::delete('rewards/{reward}/users/{user}', [RewardController::class, 'removeUser'])->name('rewards.remove-user');
 });
