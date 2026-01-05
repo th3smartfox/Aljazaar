@@ -65,10 +65,9 @@ Route::get('/content/cart-page', [CartPageContentController::class, 'getPageCont
 Route::get('/content/checkout-page', [CheckoutPageContentController::class, 'getPageContent']);
 Route::get('/content/add-address-page', [AddAddressPageController::class, 'getPageContent']);
 Route::get('/content/access-location-page', [AccessLocationPageController::class, 'getPageContent']);
-Route::get('/content/card-details-page', [CardDetailsPageController::class, 'getPageContent']);
+Route::get('/content/card-details-page', [CardDetailsPageController::class, 'getPageContent'])->middleware('auth:sanctum');
 Route::get('/content/successful-page', [SuccessfulPageController::class, 'getPageContent']);
 Route::get('/content/drawer-page', [DrawerPageController::class, 'getPageContent']);
-Route::get('/content/wallet-page', [WalletPageController::class, 'getPageContent']);
 Route::get('/content/change-information-page', [ChangeInformationPageController::class, 'getPageContent']);
 Route::get('/content/personal-information-page', [PersonalInformationPageController::class, 'getPageContent']);
 Route::get('/content/signup-page', [SignupPageController::class, 'getPageContent']);
