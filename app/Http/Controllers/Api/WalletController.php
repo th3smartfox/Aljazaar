@@ -21,6 +21,15 @@ class WalletController extends Controller
         $user = Auth::user();
         $wallet = $user->wallet;
 
+        // Create wallet if it doesn't exist
+        if (!$wallet) {
+            $wallet = Wallet::create([
+                'user_id' => $user->id,
+                'balance' => 0.00,
+                'points' => 0.00,
+            ]);
+        }
+
         // Get or create page content
         $pageContent = WalletPage::first();
         if (!$pageContent) {
@@ -75,6 +84,13 @@ class WalletController extends Controller
     {
         $user = Auth::user();
         $wallet = $user->wallet;
+
+        if (!$wallet) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Wallet not found',
+            ], 404);
+        }
 
         $request->validate([
             'amount' => 'required|numeric|min:10',
@@ -141,6 +157,13 @@ class WalletController extends Controller
     {
         $user = Auth::user();
         $wallet = $user->wallet;
+
+        if (!$wallet) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Wallet not found',
+            ], 404);
+        }
 
         $request->validate([
             'amount' => 'required|numeric|min:1',
@@ -211,6 +234,14 @@ class WalletController extends Controller
         $user = Auth::user();
         $wallet = $user->wallet;
 
+        if (!$wallet) {
+            $wallet = Wallet::create([
+                'user_id' => $user->id,
+                'balance' => 0.00,
+                'points' => 0.00,
+            ]);
+        }
+
         $request->validate([
             'amount' => 'required|numeric|min:1',
             'payment_method' => 'required|string|in:card,paypal,google_pay,apple_pay',
@@ -256,6 +287,18 @@ class WalletController extends Controller
     {
         $user = Auth::user();
         $wallet = $user->wallet;
+
+        if (!$wallet) {
+            return response()->json([
+                'transactions' => [],
+                'pagination' => [
+                    'current_page' => 1,
+                    'last_page' => 1,
+                    'per_page' => 20,
+                    'total' => 0,
+                ],
+            ]);
+        }
 
         $perPage = $request->input('per_page', 20);
         $type = $request->input('type');
